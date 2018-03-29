@@ -1,7 +1,9 @@
 #include <Wire.h>
-#include <FastLED.h>
 #include "TimerOne.h"
 #include "ClickEncoder.h"
+#include "Torus.h"
+#include "Animations.h"
+#include "Patterns.h"
 #include <Adafruit_CircuitPlayground.h>
 
 #define STRIP_PIN 12
@@ -22,43 +24,20 @@ int16_t previousEncoderValue, currentEncoderValue;
 CRGB strip[NUM_PIXELS];
 CRGB settings_strip[NUM_SETTING_PIXELS];
 
-bool flipFlopState = true;
+Torus *totem;
+Patterns *patterns;
+Animations *animations;
 
-uint8_t hue = 0;
 uint8_t currentMode = 0;
 uint8_t currentPattern = 0;
 uint16_t animationSpeed = 24;
-bool animationDirection = true;
 
-typedef void (*SimplePattern)();
-typedef void (*Action)();
-typedef void (*Mode)();
-
-typedef struct {
-    SimplePattern pattern;
-    Action action;
-} PatternDefinition;
-typedef PatternDefinition PatternDefinitionList[];
-
-// It's silly this is here...but for some reason stuff doesn't work if it's not...?
-void nothing() {
-  //notin
+void timerIsr() {
+  encoder->service();
 }
-
-const PatternDefinitionList patterns = {
-        {meteor, cycle_clockwise},
-        {fourPoints, cycle_clockwise},
-        {nothing,       bpm},
-        {nothing,       juggle},
-        {nothing,       sinelon},
-        {nothing,       confetti},
-        {nothing,       chasingFromSides},
-        {nothing,       chasingInfinity},
-        {nothing,       middleFanout},
-        {wipeRainbow,   cycle_clockwise},
-        {nothing,       pendulum}
-};
-
+// For some reason all these typedefs have to be below a void fuction
+// God only knows why
+typedef void (*Mode)();
 typedef Mode ModeList[];
 const ModeList modes = {
     patternSelectMode,
@@ -66,9 +45,30 @@ const ModeList modes = {
     patternColorMode
 };
 
-void timerIsr() {
-  encoder->service();
-}
+typedef void (Patterns::*Pattern)();
+typedef void (Animations::*Animation)();
+typedef struct {
+    Pattern pattern;
+    Animation animation;
+} PatternDefinition;
+typedef PatternDefinition PatternDefinitionList[];
+
+//TODO: Get a better name, yo
+const PatternDefinitionList pattern_list = {
+        {&Patterns::meteor,     &Animations::cycle},
+        {&Patterns::fourPoints, &Animations::cycle},
+        {&Patterns::nothing,    &Animations::bpm},
+        {&Patterns::nothing,    &Animations::juggle},
+        {&Patterns::nothing,    &Animations::sinelon},
+        {&Patterns::nothing,    &Animations::confetti},
+//        {&Patterns::nothing,       chasingFromSides},
+        {&Patterns::nothing,    &Animations::wipeSolidFromBottom},
+        {&Patterns::nothing,    &Animations::wipeRainbow},
+        {&Patterns::nothing,    &Animations::wipeInfinity},
+//        {&Patterns::nothing,       middleFanout},
+//        {&Patterns::wipeRainbow,   cycle},
+//        {&Patterns::nothing,       pendulum}
+};
 
 void setup() {
   Serial.begin(9600);
@@ -81,6 +81,10 @@ void setup() {
   FastLED.addLeds<NEOPIXEL, STRIP_PIN>(strip, NUM_PIXELS);
   FastLED.addLeds<NEOPIXEL, SETTINGS_STRIP_PIN>(settings_strip, NUM_SETTING_PIXELS);
 
+  totem = new Torus(strip, 0);
+  patterns = new Patterns(totem);
+  animations = new Animations(totem);
+
   //Initialize the encoder (knob) and it's interrupt
   encoder = new ClickEncoder(0, 1, 6, 4, false);
   Timer1.initialize(1000);
@@ -91,12 +95,12 @@ void setup() {
 
   // Display the initial pattern
   displaySettingMode();
-  patterns[currentPattern].pattern();
+  (patterns->*pattern_list[currentPattern].pattern)();
 }
 
 void loop() {
   checkEncoderInput();
-  patterns[currentPattern].action();
+  (animations->*pattern_list[currentPattern].animation)();
   FastLED.show();
   delay(animationSpeed);
 }
@@ -122,7 +126,7 @@ void checkEncoderInput() {
         encoder->setAccelerationEnabled(!encoder->getAccelerationEnabled());
         break;
       case ClickEncoder::Released:
-        flipFlop(animationDirection);
+        totem->changeDirection();
         break;
       default:
         ;
@@ -157,22 +161,21 @@ void patternSpeedMode() {
 }
 
 void patternColorMode() {
-  hue += 5;
-  clearStrip();
-  patterns[currentPattern].pattern();
+  totem->setHue(totem->getHue() + 5);
+  totem->clearStrip();
+  (patterns->*pattern_list[currentPattern].pattern)();
 }
 
 void nextPattern() {
-    Serial.println("Doing the next one, boss");
-    currentPattern = wrapAround(currentPattern + 1, ARRAY_SIZE(patterns));
-    clearStrip();
-    patterns[currentPattern].pattern();
+    currentPattern = wrapAround(currentPattern + 1, ARRAY_SIZE(pattern_list));
+    totem->clearStrip();
+    (patterns->*pattern_list[currentPattern].pattern)();
 }
 
 void previousPattern() {
-    currentPattern = wrapAround(currentPattern - 1, ARRAY_SIZE(patterns));
-    clearStrip();
-    patterns[currentPattern].pattern();
+    currentPattern = wrapAround(currentPattern - 1, ARRAY_SIZE(pattern_list));
+    totem->clearStrip();
+    (patterns->*pattern_list[currentPattern].pattern)();
 }
 
 int wrapAround(int value, int maxValue) {
@@ -183,12 +186,4 @@ int wrapAround(int value, int maxValue) {
         return value - maxValue;
     }
     return value;
-}
-
-void flipFlop(bool &flopToFlip) {
-  if (flopToFlip == true) {
-    flopToFlip = false;
-    return;
-  }
-  flopToFlip = true;
 }

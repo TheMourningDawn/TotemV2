@@ -13,17 +13,17 @@ const float pupilRadius = 2; // half-width of pupil (in pixels)
 
 void pendulum() {
     Serial.println("Tryna do some pendulum stuff here");
-    CRGB magHeadingBasedColor = CHSV(hue, 255, 255);
+    CRGB magHeadingBasedColor = CHSV(totem->getHue(), 255, 255);
     pendulumMode(magHeadingBasedColor, false, false);
 }
 
 void pendulumAntiGravity() {
-    CRGB magHeadingBasedColor = CHSV(hue, 255, 255);
+    CRGB magHeadingBasedColor = CHSV(totem->getHue(), 255, 255);
     pendulumMode(magHeadingBasedColor, true, false);
 }
 
 void pendulumMirrored() {
-    CRGB magHeadingBasedColor = CHSV(hue, 255, 255);
+    CRGB magHeadingBasedColor = CHSV(totem->getHue(), 255, 255);
     pendulumMode(magHeadingBasedColor, false, true);
 }
 
