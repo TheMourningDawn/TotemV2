@@ -69,4 +69,18 @@ void Patterns::fourPoints(uint8_t point1, uint8_t point2, uint8_t point3, uint8_
   FastLED.show();
 }
 
+void Patterns::halfTopBottom() {
+  CRGB topColor = CHSV(totem->getHue(), 255, 255);
+  CRGB bottomColor = CHSV(totem->getHue() + 100, 255, 255);
+  halfTopBottom(true, topColor, bottomColor);
+}
+
+void Patterns::halfTopBottom(bool animate, CRGB colorTop, CRGB colorBottom) {
+  uint8_t leftIndex = totem->getLeftPixelIndex();
+  uint8_t rightIndex = totem->getRightPixelIndex();
+
+  totem->fill(leftIndex, rightIndex, colorTop);
+  totem->fill(rightIndex, leftIndex, colorBottom);
+}
+
 #endif

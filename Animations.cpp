@@ -8,6 +8,8 @@ Animations::Animations() {}
 Animations::Animations(Torus *totem) : totem(totem) {
   animationDirection = true;
   hue = 0;
+  currentIndex = 0;
+  tempCounter = 0;
 }
 
 
@@ -165,33 +167,27 @@ void Animations::wipeInfinity() {
   }
 }
 
-//TODO: Needs fill to implement more better...
-// void halfTopBottom() {
-//  halfTopBottom(true, CRGB::Red, CRGB::Blue);
-//}
-//
-//void halfTopBottom(bool animate, CRGB colorTop, CRGB colorBottom) {
-// Serial.println("Starting function");
-//  uint16_t rightAnchor = 15;
-//  uint16_t leftAnchor = 45;
-//  uint16_t endPoint = 45;
-//
-//  while (rightAnchor < endPoint) {
-//    setPixel(strip, rightAnchor, colorTop);
-//    setPixel(strip, leftAnchor, colorBottom);
-//    rightAnchor++;
-//    leftAnchor++;
-//    if (leftAnchor == NUM_PIXELS) {
-//      leftAnchor = 0;
-//    }
-//    if (animate == true) {
-//      FastLED.show();
-//      delay(animationSpeed);
-//    }
-//  }
-//  if (animate == false) {
-//    FastLED.show();
-//  }
-//}
+
+void Animations::wipeRandom() {
+  totem->setPixel(currentIndex, CHSV(totem->getHue(), 255, 255));
+  if(totem->getDirection() == true) {
+    currentIndex++;
+    if(currentIndex > totem->length()-1) {
+      currentIndex = 0;
+    }
+  } else {
+    currentIndex--;
+    if(currentIndex > totem->length()-1) {
+      currentIndex = totem->length()-1;
+    }
+  }
+  //What I want is to change the color at some random point after it's gone 1/4 of the circle
+  //the only thing I can think of is oddly complicated and maybe inconsistant?
+  tempCounter++;
+  if(tempCounter > totem->length()/4 + random8(0, totem->length()/2)) {
+    totem->incrementHue(random8(20, 60));
+    tempCounter = 0;
+  }
+}
 
 #endif

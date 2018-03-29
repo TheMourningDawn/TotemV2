@@ -62,6 +62,28 @@ void Torus::clearStrip() {
   }
 }
 
+void Torus::fill(int fromIndex, int toIndex, CRGB color) {
+  if(toIndex < fromIndex) {
+    //We're jumping the gap at the end...just split it recurse
+    fill(0, toIndex, color);
+    toIndex = length()-1;
+  }
+  int numberToFill = abs(toIndex - fromIndex) + 1;
+  int startFillFrom = fromIndex;
+  fill_solid( &(strip[startFillFrom]), numberToFill, color );
+}
+
+void Torus::fill(int fromIndex, int toIndex, uint8_t color) {
+  if(toIndex < fromIndex) {
+    //We're jumping the gap at the end...just split it recurse
+    fill(0, toIndex, color);
+    toIndex = length()-1;
+  }
+  int numberToFill = abs(toIndex - fromIndex) + 1;
+  int startFillFrom = fromIndex;
+  fill_solid( &(strip[startFillFrom]), numberToFill, CHSV(color, 255, 255));
+}
+
 void Torus::setTopPixel(CRGB color) {
   strip[topIndex] = color;
 }

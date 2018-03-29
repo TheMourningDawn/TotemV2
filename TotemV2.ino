@@ -65,6 +65,8 @@ const PatternDefinitionList pattern_list = {
         {&Patterns::nothing,    &Animations::wipeSolidFromBottom},
         {&Patterns::nothing,    &Animations::wipeRainbow},
         {&Patterns::nothing,    &Animations::wipeInfinity},
+        {&Patterns::halfTopBottom,    &Animations::cycle},
+        {&Patterns::nothing,    &Animations::wipeRandom},
 //        {&Patterns::nothing,       middleFanout},
 //        {&Patterns::wipeRainbow,   cycle},
 //        {&Patterns::nothing,       pendulum}

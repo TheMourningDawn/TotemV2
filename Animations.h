@@ -10,6 +10,8 @@ class Animations {
 private:
   Torus *totem;
   uint8_t hue;
+  uint8_t currentIndex; //Used for keeping track of a moving index
+  uint8_t tempCounter; //Secondary track keeping int for whatever
   boolean animationDirection;
 public:
   Animations();
@@ -31,7 +33,10 @@ public:
   void juggle();
 
   void wipeInfinity();
-
+  
+  void wipeRandom();
+  
+  //Movement animations
   void cycle();
 };
 

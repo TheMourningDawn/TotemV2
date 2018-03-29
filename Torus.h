@@ -30,8 +30,13 @@ public:
   void setTopPixel(CRGB color);
   void setBottomPixel(CRGB color);
   void clearStrip();
+  void fill(int fromIndex, int toIndex, CRGB color);
+  void fill(int fromIndex, int toIndex, uint8_t color);
 
-  //TODO: Make wipe and fill methdods
+  // Wipe are the same as fill, except they animate the fill.
+  // of course this blocks until the loop is done. YYMV.
+  void wipe(int fromIndex, int toIndex, CRGB color);
+  void wipe(int fromIndex, int toIndex, uint8_t color);
 
   //Modifications
   void fadePixel(uint8_t index, int fade);
