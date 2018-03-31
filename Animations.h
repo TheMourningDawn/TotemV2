@@ -3,6 +3,10 @@
 
 #include "TimerOne.h"
 #include "Torus.h"
+#include <Adafruit_CircuitPlayground.h>
+
+#define BINS   10          // FFT output is filtered down to this many bins
+#define FRAMES 4           // This many FFT cycles are averaged for leveling
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
@@ -13,6 +17,12 @@ private:
   uint8_t currentIndex; //Used for keeping track of a moving index
   uint8_t tempCounter; //Secondary track keeping int for whatever
   boolean animationDirection;
+  uint16_t spectrum[BINS]; // FFT spectrum output buffer
+
+  uint8_t lvl[FRAMES][BINS]; // Bin levels for the prior #FRAMES frames
+  uint8_t avgLo[BINS];       // Pseudo rolling averages for bins -- lower and
+  uint8_t avgHi[BINS];       // upper limits -- for dynamic level adjustment.
+  uint8_t frameIdx = 0;      // Counter for lvl storage
 public:
   Animations();
   Animations(Torus *totem);
@@ -32,7 +42,10 @@ public:
   void sinelon();
   void juggle();
 
+  //testing
   void wipeInfinity();
+  void testFFT();
+  void runFFT();
   
   void wipeRandom();
   

@@ -67,6 +67,7 @@ const PatternDefinitionList pattern_list = {
         {&Patterns::nothing,    &Animations::wipeInfinity},
         {&Patterns::halfTopBottom,    &Animations::cycle},
         {&Patterns::nothing,    &Animations::wipeRandom},
+        {&Patterns::nothing,    &Animations::testFFT},
 //        {&Patterns::nothing,       middleFanout},
 //        {&Patterns::wipeRainbow,   cycle},
 //        {&Patterns::nothing,       pendulum}
@@ -80,8 +81,8 @@ void setup() {
   CircuitPlayground.begin();
 
   //Initialize FastLED for the main strip and the settings strip
-  FastLED.addLeds<NEOPIXEL, STRIP_PIN>(strip, NUM_PIXELS);
-  FastLED.addLeds<NEOPIXEL, SETTINGS_STRIP_PIN>(settings_strip, NUM_SETTING_PIXELS);
+  FastLED.addLeds<NEOPIXEL, STRIP_PIN>(strip, NUM_PIXELS).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<NEOPIXEL, SETTINGS_STRIP_PIN>(settings_strip, NUM_SETTING_PIXELS).setCorrection(TypicalLEDStrip);
 
   totem = new Torus(strip, 0);
   patterns = new Patterns(totem);
@@ -104,7 +105,7 @@ void loop() {
   checkEncoderInput();
   (animations->*pattern_list[currentPattern].animation)();
   FastLED.show();
-  delay(animationSpeed);
+//  delay(animationSpeed);
 }
 
 /*

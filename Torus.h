@@ -38,6 +38,9 @@ public:
   void wipe(int fromIndex, int toIndex, CRGB color);
   void wipe(int fromIndex, int toIndex, uint8_t color);
 
+  void shiftClockwise(int shiftFromPixel);
+  void shiftCounterClockwise(int shiftFromPixel);
+
   //Modifications
   void fadePixel(uint8_t index, int fade);
 

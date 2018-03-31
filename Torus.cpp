@@ -159,6 +159,17 @@ void Torus::setHue(uint8_t newHue) {
 void Torus::incrementHue(uint8_t amount) {
   hue += amount;
 }
+
+void Torus::shiftClockwise(int shiftFromPixel) {
+  int distance = (length()-1) - shiftFromPixel;
+  memmove(&strip[shiftFromPixel+1], &strip[shiftFromPixel], (distance) * sizeof(CRGB));
+}
+
+void Torus::shiftCounterClockwise(int shiftFromPixel) {
+  int distance = shiftFromPixel;
+  memmove(&strip[0], &strip[1], (distance) * sizeof(CRGB));
+}
+
 //
 //void Torus::shiftMiddle() {
 //    if(left < right) {
