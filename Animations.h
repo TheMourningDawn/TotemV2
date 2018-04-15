@@ -3,6 +3,7 @@
 
 #include "TimerOne.h"
 #include "Torus.h"
+#include "Equalizer.h"
 #include <Adafruit_CircuitPlayground.h>
 
 #define BINS   10          // FFT output is filtered down to this many bins
@@ -13,6 +14,7 @@
 class Animations {
 private:
   Torus *totem;
+  Equalizer *equalizer;
   uint8_t hue;
   uint8_t currentIndex; //Used for keeping track of a moving index
   uint8_t tempCounter; //Secondary track keeping int for whatever
@@ -25,8 +27,8 @@ private:
   uint8_t frameIdx = 0;      // Counter for lvl storage
 public:
   Animations();
-  Animations(Torus *totem);
-  
+  Animations(Torus *totem, Equalizer *equalizer);
+
   //Long running animations
   void wipeSolidFromBottom();
   
@@ -41,13 +43,16 @@ public:
   void bpm();
   void sinelon();
   void juggle();
+  void hemiola();
+  int8_t clamp(int8_t index);
 
   //testing
   void wipeInfinity();
-  void testFFT();
-  void runFFT();
-  
   void wipeRandom();
+
+  void waterfallEqualizer();
+
+  int clamp(int value, int maxValue);
   
   //Movement animations
   void cycle();

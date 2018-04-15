@@ -4,6 +4,7 @@
 #include "Torus.h"
 #include "Animations.h"
 #include "Patterns.h"
+#include "Equalizer.h"
 #include <Adafruit_CircuitPlayground.h>
 
 #define STRIP_PIN 12
@@ -12,6 +13,10 @@
 #define PIN_ENCODER_A 0
 #define PIN_ENCODER_B 1
 #define PIN_ENCODER_SWITCH 6
+
+#define STROBE_PIN 2
+#define RESET_PIN 3
+#define EQ_PIN A10
 
 #define NUM_PIXELS 80
 #define NUM_SETTING_PIXELS 10
@@ -24,13 +29,16 @@ int16_t previousEncoderValue, currentEncoderValue;
 CRGB strip[NUM_PIXELS];
 CRGB settings_strip[NUM_SETTING_PIXELS];
 
+int frequencies[7];
+
 Torus *totem;
 Patterns *patterns;
 Animations *animations;
+Equalizer *equalizer;
 
 uint8_t currentMode = 0;
 uint8_t currentPattern = 0;
-uint16_t animationSpeed = 24;
+uint16_t animationSpeed = 10;
 
 void timerIsr() {
   encoder->service();
@@ -56,21 +64,23 @@ typedef PatternDefinition PatternDefinitionList[];
 //TODO: Get a better name, yo
 const PatternDefinitionList pattern_list = {
         {&Patterns::meteor,     &Animations::cycle},
+        {&Patterns::whatever,     &Animations::cycle},
         {&Patterns::fourPoints, &Animations::cycle},
         {&Patterns::nothing,    &Animations::bpm},
         {&Patterns::nothing,    &Animations::juggle},
         {&Patterns::nothing,    &Animations::sinelon},
         {&Patterns::nothing,    &Animations::confetti},
-//        {&Patterns::nothing,       chasingFromSides},
         {&Patterns::nothing,    &Animations::wipeSolidFromBottom},
         {&Patterns::nothing,    &Animations::wipeRainbow},
         {&Patterns::nothing,    &Animations::wipeInfinity},
         {&Patterns::halfTopBottom,    &Animations::cycle},
         {&Patterns::nothing,    &Animations::wipeRandom},
-        {&Patterns::nothing,    &Animations::testFFT},
+        {&Patterns::nothing,    &Animations::hemiola},
 //        {&Patterns::nothing,       middleFanout},
 //        {&Patterns::wipeRainbow,   cycle},
 //        {&Patterns::nothing,       pendulum}
+//        {&Patterns::nothing,       chasingFromSides},
+//        {&Patterns::nothing,    &Animations::testFFT},
 };
 
 void setup() {
@@ -86,7 +96,8 @@ void setup() {
 
   totem = new Torus(strip, 0);
   patterns = new Patterns(totem);
-  animations = new Animations(totem);
+    equalizer = new Equalizer();
+    animations = new Animations(totem, equalizer);
 
   //Initialize the encoder (knob) and it's interrupt
   encoder = new ClickEncoder(0, 1, 6, 4, false);
@@ -105,7 +116,7 @@ void loop() {
   checkEncoderInput();
   (animations->*pattern_list[currentPattern].animation)();
   FastLED.show();
-//  delay(animationSpeed);
+  delay(animationSpeed);
 }
 
 /*

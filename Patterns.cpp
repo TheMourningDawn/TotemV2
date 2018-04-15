@@ -1,9 +1,9 @@
 /********************************************************************
  * SimplePatterns:
- * These are static patterns that rely on an animation like cycle 
+ * These are static patterns that rely on an animation like cycle
  * to move them around one step at a time. As to not busy the
  * arduino from checking for sensor input.
- * 
+ *
  * These all need a no param method that has default values
  *******************************************************************/
 #ifndef PATTERNS_CPP
@@ -81,6 +81,15 @@ void Patterns::halfTopBottom(bool animate, CRGB colorTop, CRGB colorBottom) {
 
   totem->fill(leftIndex, rightIndex, colorTop);
   totem->fill(rightIndex, leftIndex, colorBottom);
+}
+
+void Patterns::whatever() {
+  totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), CHSV(totem->getHue()+100, 255, 255));
+  totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), CHSV(totem->getHue()+30, 255, 255));
+  totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), CHSV(totem->getHue()+90, 255, 255));
+  totem->fill(totem->getLeftPixelIndex(), totem->getBottomPixelIndex(), CHSV(totem->getHue()+140, 255, 255));
+
+
 }
 
 #endif
