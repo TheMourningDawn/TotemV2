@@ -1,9 +1,5 @@
 void cycleSettingsMode() {
-    Serial.println("cycling?");
-	currentMode++;
-	if (currentMode >= ARRAY_SIZE(modes)) {
-		currentMode = 0;
-	}
+	currentMode = Utils::clamp(currentMode+1, ARRAY_SIZE(modes));
 	Serial.print("Current settings mode: ");
 	Serial.println(currentMode);
 	displaySettingMode();

@@ -55,7 +55,6 @@ void Torus::setBottomPixel(CRGB color) {
   strip[bottomIndex] = color;
 }
 
-//TODO: change this to a fill_solid for SPEEEEEEED
 void Torus::clearStrip() {
   fill_solid( &(strip[0]), length(), CRGB::Black);
 }

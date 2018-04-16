@@ -24,7 +24,8 @@
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 ClickEncoder *encoder;
-int16_t previousEncoderValue, currentEncoderValue;
+int16_t previousEncoderValue = 0;
+int16_t currentEncoderValue = 0;
 
 CRGB strip[NUM_PIXELS];
 CRGB settings_strip[NUM_SETTING_PIXELS];
@@ -38,7 +39,7 @@ Equalizer *equalizer;
 
 uint8_t currentMode = 0;
 uint8_t currentPattern = 0;
-uint16_t animationSpeed = 10;
+int animationSpeed = 10;
 
 void timerIsr() {
     encoder->service();
@@ -85,7 +86,6 @@ const PatternDefinitionList pattern_list = {
 
 void setup() {
     Serial.begin(9600);
-    Serial.println("Starting");
 
     // Initialize the circuit playground board
     CircuitPlayground.begin();
@@ -103,9 +103,6 @@ void setup() {
     encoder = new ClickEncoder(0, 1, 6, 4, false);
     Timer1.initialize(1000);
     Timer1.attachInterrupt(timerIsr);
-
-    //Initial value for the previous encoder value
-    previousEncoderValue = 0;
 
     // Display the initial pattern
     displaySettingMode();
@@ -171,28 +168,32 @@ void patternSpeedMode() {
     } else if (currentEncoderValue < previousEncoderValue) {
         animationSpeed += 2;
     }
-    if (animationSpeed <= 4) {
-        animationSpeed = 5;
+    if (animationSpeed < 2) {
+        animationSpeed = 0;
     }
+    Serial.print("Speed: ");
+    Serial.println(animationSpeed);
 }
 
 void patternColorMode() {
     totem->setHue(totem->getHue() + 5);
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
+    Serial.print("Hue: ");
+    Serial.println(totem->getHue());
 }
 
 void nextPattern() {
-    Serial.println("Going to the next pattern");
     currentPattern = Utils::wrap(currentPattern + 1, ARRAY_SIZE(pattern_list)-1);
+    Serial.print("Next pattern: ");
     Serial.println(currentPattern);
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
 }
 
 void previousPattern() {
-    Serial.println("Going to the previous pattern");
     currentPattern = Utils::wrap(currentPattern - 1, ARRAY_SIZE(pattern_list)-1);
+    Serial.print("Previous pattern: ");
     Serial.println(currentPattern);
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
