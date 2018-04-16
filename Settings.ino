@@ -1,8 +1,11 @@
 void cycleSettingsMode() {
+    Serial.println("cycling?");
 	currentMode++;
 	if (currentMode >= ARRAY_SIZE(modes)) {
 		currentMode = 0;
 	}
+	Serial.print("Current settings mode: ");
+	Serial.println(currentMode);
 	displaySettingMode();
 	currentEncoderValue = 0;
 	previousEncoderValue = currentEncoderValue; //this is dumb

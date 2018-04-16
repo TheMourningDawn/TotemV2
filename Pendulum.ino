@@ -71,11 +71,11 @@ void pendulumMode(CRGB color, bool antiGravity, bool mirroredEyes) {
     int lightOn[round(pupilRadius * 2 + 1)];
     int lightIndex = 0;
     for (int i = pos; i > pos - pupilRadius; i--) {
-        lightOn[lightIndex] = wrapAround(i, NUM_PIXELS);
+        lightOn[lightIndex] = Utils::wrap(i, NUM_PIXELS);
         lightIndex++;
     }
     for (int i = pos; i < pos + pupilRadius; i++) {
-        lightOn[lightIndex] = wrapAround(i, NUM_PIXELS);
+        lightOn[lightIndex] = Utils::wrap(i, NUM_PIXELS);
         lightIndex++;
     }
     for (int i = 0; i < NUM_PIXELS; i++) {

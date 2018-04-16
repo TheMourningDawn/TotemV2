@@ -88,8 +88,6 @@ void Patterns::whatever() {
   totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), CHSV(totem->getHue()+30, 255, 255));
   totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), CHSV(totem->getHue()+90, 255, 255));
   totem->fill(totem->getLeftPixelIndex(), totem->getBottomPixelIndex(), CHSV(totem->getHue()+140, 255, 255));
-
-
 }
 
 #endif

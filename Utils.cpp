@@ -1,7 +1,5 @@
 #include "Utils.h"
 
-//Utils::Utils() {}
-
 /********************************************************
  * Bounds a integer between 0 and the maxValue inclusive
  *
@@ -50,7 +48,7 @@ int Utils::wrap(int value, int maxValue) {
 int Utils::wrap(int value, int minValue, int maxValue) {
     int range = maxValue - minValue + 1;
     if(value > maxValue) {
-        value = minValue + (value % maxValue);
+        value = minValue + (value % maxValue) - 1;
     } else if (value < minValue) {
         value = value + range;
     }

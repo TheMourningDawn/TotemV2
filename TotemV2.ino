@@ -41,20 +41,24 @@ uint8_t currentPattern = 0;
 uint16_t animationSpeed = 10;
 
 void timerIsr() {
-  encoder->service();
+    encoder->service();
 }
+
 // For some reason all these typedefs have to be below a void fuction
 // God only knows why
 typedef void (*Mode)();
+
 typedef Mode ModeList[];
 const ModeList modes = {
-    patternSelectMode,
-    patternSpeedMode,
-    patternColorMode
+        patternSelectMode,
+        patternSpeedMode,
+        patternColorMode
 };
 
 typedef void (Patterns::*Pattern)();
+
 typedef void (Animations::*Animation)();
+
 typedef struct {
     Pattern pattern;
     Animation animation;
@@ -63,55 +67,56 @@ typedef PatternDefinition PatternDefinitionList[];
 
 //TODO: Get a better name, yo
 const PatternDefinitionList pattern_list = {
-        {&Patterns::meteor,     &Animations::cycle},
-        {&Patterns::whatever,     &Animations::cycle},
-        {&Patterns::fourPoints, &Animations::cycle},
-        {&Patterns::nothing,    &Animations::bpm},
-        {&Patterns::nothing,    &Animations::juggle},
-        {&Patterns::nothing,    &Animations::sinelon},
-        {&Patterns::nothing,    &Animations::confetti},
-        {&Patterns::nothing,    &Animations::wipeSolidFromBottom},
-        {&Patterns::nothing,    &Animations::wipeRainbow},
-        {&Patterns::nothing,    &Animations::wipeInfinity},
-        {&Patterns::halfTopBottom,    &Animations::cycle},
-        {&Patterns::nothing,    &Animations::wipeRandom},
-        {&Patterns::nothing,    &Animations::hemiola},
+        {&Patterns::meteor,        &Animations::cycle},
+        {&Patterns::whatever,      &Animations::cycle},
+        {&Patterns::fourPoints,    &Animations::cycle},
+        {&Patterns::nothing,       &Animations::bpm},
+        {&Patterns::nothing,       &Animations::juggle},
+        {&Patterns::nothing,       &Animations::sinelon},
+        {&Patterns::nothing,       &Animations::confetti},
+        {&Patterns::nothing,       &Animations::wipeSolidFromBottom},
+        {&Patterns::nothing,       &Animations::wipeRainbow},
+        {&Patterns::nothing,       &Animations::wipeInfinity},
+        {&Patterns::halfTopBottom, &Animations::cycle},
+        {&Patterns::nothing,       &Animations::wipeRandom},
+        {&Patterns::nothing,       &Animations::hemiola},
+        {&Patterns::nothing,       &Animations::waterfallEqualizer},
 };
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("Starting");
+    Serial.begin(9600);
+    Serial.println("Starting");
 
-  // Initialize the circuit playground board
-  CircuitPlayground.begin();
+    // Initialize the circuit playground board
+    CircuitPlayground.begin();
 
-  //Initialize FastLED for the main strip and the settings strip
-  FastLED.addLeds<NEOPIXEL, STRIP_PIN>(strip, NUM_PIXELS).setCorrection(TypicalLEDStrip);
-  FastLED.addLeds<NEOPIXEL, SETTINGS_STRIP_PIN>(settings_strip, NUM_SETTING_PIXELS).setCorrection(TypicalLEDStrip);
+    //Initialize FastLED for the main strip and the settings strip
+    FastLED.addLeds<NEOPIXEL, STRIP_PIN>(strip, NUM_PIXELS).setCorrection(TypicalLEDStrip);
+    FastLED.addLeds<NEOPIXEL, SETTINGS_STRIP_PIN>(settings_strip, NUM_SETTING_PIXELS).setCorrection(TypicalLEDStrip);
 
-  totem = new Torus(strip, 0);
-  patterns = new Patterns(totem);
+    totem = new Torus(strip, 0);
+    patterns = new Patterns(totem);
     equalizer = new Equalizer();
     animations = new Animations(totem, equalizer);
 
-  //Initialize the encoder (knob) and it's interrupt
-  encoder = new ClickEncoder(0, 1, 6, 4, false);
-  Timer1.initialize(1000);
-  Timer1.attachInterrupt(timerIsr);
+    //Initialize the encoder (knob) and it's interrupt
+    encoder = new ClickEncoder(0, 1, 6, 4, false);
+    Timer1.initialize(1000);
+    Timer1.attachInterrupt(timerIsr);
 
-  //Initial value for the previous encoder value
-  previousEncoderValue = 0;
+    //Initial value for the previous encoder value
+    previousEncoderValue = 0;
 
-  // Display the initial pattern
-  displaySettingMode();
-  (patterns->*pattern_list[currentPattern].pattern)();
+    // Display the initial pattern
+    displaySettingMode();
+    (patterns->*pattern_list[currentPattern].pattern)();
 }
 
 void loop() {
-  checkEncoderInput();
-  (animations->*pattern_list[currentPattern].animation)();
-  FastLED.show();
-  delay(animationSpeed);
+    checkEncoderInput();
+    (animations->*pattern_list[currentPattern].animation)();
+    FastLED.show();
+    delay(animationSpeed);
 }
 
 /*
@@ -123,76 +128,73 @@ void loop() {
  * Rotate: Change value
  */
 void checkEncoderInput() {
-  currentEncoderValue += encoder->getValue();
+    currentEncoderValue += encoder->getValue();
 
-  ClickEncoder::Button b = encoder->getButton();
-  if (b != ClickEncoder::Open) {
-    switch (b) {
-      case ClickEncoder::Clicked:
-        cycleSettingsMode();
-        break;
-      case ClickEncoder::DoubleClicked:
-        encoder->setAccelerationEnabled(!encoder->getAccelerationEnabled());
-        break;
-      case ClickEncoder::Released:
-        totem->changeDirection();
-        break;
-      default:
-        ;
+    ClickEncoder::Button b = encoder->getButton();
+    if (b != ClickEncoder::Open) {
+        switch (b) {
+            case ClickEncoder::Clicked:
+                Serial.println("Button clicked");
+                cycleSettingsMode();
+                break;
+            case ClickEncoder::DoubleClicked:
+                Serial.println("Button double clicked");
+                encoder->setAccelerationEnabled(!encoder->getAccelerationEnabled());
+                break;
+            case ClickEncoder::Released:
+                Serial.println("Button held");
+                totem->changeDirection();
+                break;
+            default:;
+        }
     }
-  }
 
-  if (b == ClickEncoder::Open) {
-    if (currentEncoderValue != previousEncoderValue) {
-      modes[currentMode]();
-      previousEncoderValue = currentEncoderValue;
+    if (b == ClickEncoder::Open) {
+        if (currentEncoderValue != previousEncoderValue) {
+            modes[currentMode]();
+            previousEncoderValue = currentEncoderValue;
+        }
     }
-  }
 }
 
 void patternSelectMode() {
-  if (currentEncoderValue > previousEncoderValue) {
-    nextPattern();
-  } else if (currentEncoderValue < previousEncoderValue) {
-    previousPattern();
-  }
+    if (currentEncoderValue > previousEncoderValue) {
+        nextPattern();
+    } else if (currentEncoderValue < previousEncoderValue) {
+        previousPattern();
+    }
 }
 
 void patternSpeedMode() {
-  if (currentEncoderValue > previousEncoderValue) {
-    animationSpeed -= 2;
-  } else if (currentEncoderValue < previousEncoderValue) {
-    animationSpeed += 2;
-  }
-  if (animationSpeed <= 4) {
-    animationSpeed = 5;
-  }
+    if (currentEncoderValue > previousEncoderValue) {
+        animationSpeed -= 2;
+    } else if (currentEncoderValue < previousEncoderValue) {
+        animationSpeed += 2;
+    }
+    if (animationSpeed <= 4) {
+        animationSpeed = 5;
+    }
 }
 
 void patternColorMode() {
-  totem->setHue(totem->getHue() + 5);
-  totem->clearStrip();
-  (patterns->*pattern_list[currentPattern].pattern)();
+    totem->setHue(totem->getHue() + 5);
+    totem->clearStrip();
+    (patterns->*pattern_list[currentPattern].pattern)();
 }
 
 void nextPattern() {
-    currentPattern = wrapAround(currentPattern + 1, ARRAY_SIZE(pattern_list));
+    Serial.println("Going to the next pattern");
+    currentPattern = Utils::wrap(currentPattern + 1, ARRAY_SIZE(pattern_list)-1);
+    Serial.println(currentPattern);
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
 }
 
 void previousPattern() {
-    currentPattern = wrapAround(currentPattern - 1, ARRAY_SIZE(pattern_list));
+    Serial.println("Going to the previous pattern");
+    currentPattern = Utils::wrap(currentPattern - 1, ARRAY_SIZE(pattern_list)-1);
+    Serial.println(currentPattern);
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
 }
 
-int wrapAround(int value, int maxValue) {
-    if (value < 0) {
-        return value + maxValue;
-    }
-    if (value > maxValue - 1) {
-        return value - maxValue;
-    }
-    return value;
-}
