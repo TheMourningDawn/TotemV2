@@ -76,11 +76,6 @@ const PatternDefinitionList pattern_list = {
         {&Patterns::halfTopBottom,    &Animations::cycle},
         {&Patterns::nothing,    &Animations::wipeRandom},
         {&Patterns::nothing,    &Animations::hemiola},
-//        {&Patterns::nothing,       middleFanout},
-//        {&Patterns::wipeRainbow,   cycle},
-//        {&Patterns::nothing,       pendulum}
-//        {&Patterns::nothing,       chasingFromSides},
-//        {&Patterns::nothing,    &Animations::testFFT},
 };
 
 void setup() {

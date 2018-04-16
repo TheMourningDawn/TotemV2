@@ -31,6 +31,7 @@ void Animations::meteor() {
   meteorChaser(15, 12, 160, false);
 }
 
+//TODO: Make sure the fade is working...dunt think it is, or maybe just replace it with a simpler one
 void Animations::meteorChaser(uint16_t meteorBodyPixel, uint8_t tailLength, uint16_t fadeValue, bool rainbowTail) {
   uint16_t i;
   int fadeSpectrum = fadeValue;
@@ -59,6 +60,9 @@ void Animations::wipeRainbow() {
   fill_rainbow(&(totem->getStrip()[0]), totem->length()-1, 0);
 }
 
+
+//TODO: consolodate this to just one function using top/bottom/right/left indexes.
+// dont see much point in making this one configurable in any way
 void Animations::fourPoints() {
   fourPoints(0, 20, 40, 60);
 }
@@ -71,7 +75,7 @@ void Animations::fourPoints(uint8_t point1, uint8_t point2, uint8_t point3, uint
   }
 }
 
-//do multiple like it says, dick.
+//TODO: Use this
 void Animations::blinkRandom(uint8_t numberRandomPixels, bool randomColor) {
   uint8_t randomPixel = random8(60);
   uint8_t randomHue = random8();
@@ -117,35 +121,6 @@ void Animations::sinelon() {
     EVERY_N_MILLISECONDS(20) { totem->incrementHue(1); }
 }
 
-int8_t i = 0;
-int8_t j = 0;
-void Animations::hemiola() {
-    EVERY_N_MILLISECONDS((8/8)*20) { 
-      i++;
-      i = clamp(i);
-      totem->setPixel(i, CHSV(totem->getHue(), 200, 192));
-      totem->setPixel(clamp(i-1), CRGB(0, 0, 0));
-      FastLED.show();
-    }
-    EVERY_N_MILLISECONDS((3/4)*20) { 
-      j++; 
-      j = clamp(j);
-      totem->setPixel(j, CHSV(totem->getHue()+120, 200, 192));
-      totem->setPixel(clamp(j-1), CRGB(0, 0, 0));
-      FastLED.show();
-    }
-}
-
-int8_t Animations::clamp(int8_t index) {
-  if (index > totem->length() - 1)
-    return (index - totem->length());
-  else if (index < 0)
-    return (index + totem->length());
-  else
-    return index;
-}
-
-
 void Animations::juggle() {
     // eight colored dots, weaving in and out of sync with each other
     fadeToBlackBy(totem->getStrip(), totem->length(), 20);
@@ -187,6 +162,13 @@ void Animations::wipeSolidFromBottom() {
   totem->incrementHue(random8(100));
 }
 
+
+/********************************************************
+ * Testing animations
+ *
+ * Trying new things!
+ */
+
 void Animations::wipeInfinity() {
   for (uint8_t i = 0; i < totem->length()-1; i++) {
     totem->setPixel(i, totem->getHue());
@@ -226,7 +208,7 @@ void Animations::waterfallEqualizer() {
   int offset = 120;
   if(equalizer->frequencies[spectrumz] > threshold) {
     int color = map(equalizer->frequencies[spectrumz], threshold, 1024, 0, 255);
-    clamp(color+offset, 255);
+    Utils::wrap(color+offset, 255);
     totem->setPixel(39, color);
     totem->getStrip()[39].nscale8_video(color);
   } else {
@@ -236,14 +218,23 @@ void Animations::waterfallEqualizer() {
   totem->shiftCounterClockwise(39);
 }
 
-int Animations::clamp(int value, int maxValue) {
-  if (value < 0) {
-    return value + maxValue;
-  }
-  if (value > maxValue - 1) {
-    return value - maxValue;
-  }
-  return value;
+int8_t i = 0;
+int8_t j = 0;
+void Animations::hemiola() {
+    EVERY_N_MILLISECONDS((8/8)*20) {
+        i++;
+        i = Utils::wrap(i, totem->length()-1);
+        totem->setPixel(i, CHSV(totem->getHue(), 200, 192));
+        totem->setPixel(Utils::wrap(i-1, totem->length()-1), CRGB(0, 0, 0));
+        FastLED.show();
+    }
+    EVERY_N_MILLISECONDS((3/4)*20) {
+        j++;
+        j = Utils::wrap(j, totem->length()-1);
+        totem->setPixel(j, CHSV(totem->getHue()+120, 200, 192));
+        totem->setPixel(Utils::wrap(j-1, totem->length()-1), CRGB(0, 0, 0));
+        FastLED.show();
+    }
 }
 
 #endif

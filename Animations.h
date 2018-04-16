@@ -4,6 +4,7 @@
 #include "TimerOne.h"
 #include "Torus.h"
 #include "Equalizer.h"
+#include "Utils.h"
 #include <Adafruit_CircuitPlayground.h>
 
 #define BINS   10          // FFT output is filtered down to this many bins
@@ -31,10 +32,10 @@ public:
 
   //Long running animations
   void wipeSolidFromBottom();
-  
+
+  //Non-blocking animations
   void meteor();
   void meteorChaser(uint16_t meteorBodyPixel, uint8_t tailLength, uint16_t fadeValue, bool rainbowTail);
-  uint8_t correctNumber(int number);
   void wipeRainbow();
   void fourPoints();
   void fourPoints(uint8_t point1, uint8_t point2, uint8_t point3, uint8_t point4);
@@ -44,17 +45,13 @@ public:
   void sinelon();
   void juggle();
   void hemiola();
-  int8_t clamp(int8_t index);
 
   //testing
   void wipeInfinity();
   void wipeRandom();
-
   void waterfallEqualizer();
 
-  int clamp(int value, int maxValue);
-  
-  //Movement animations
+  //Transition only animations
   void cycle();
 };
 
