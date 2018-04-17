@@ -54,7 +54,10 @@ const ModeList modes = {
         patternSelectMode,
         patternSpeedMode,
         patternColorMode,
-        patternFadeMode
+        patternFadeMode,
+        patternBrightnessMode,
+        patternSaturationMode,
+        sensitivitySelectMode
 };
 
 typedef void (Patterns::*Pattern)();
@@ -69,8 +72,8 @@ typedef PatternDefinition PatternDefinitionList[];
 
 //TODO: Get a better name, yo
 const PatternDefinitionList pattern_list = {
-        {&Patterns::whatever,      &Animations::cycle},
         {&Patterns::nothing,      &Animations::meteor},
+//        {&Patterns::whatever,      &Animations::cycle}, //TODO: Something wrong with this, causing resets
         {&Patterns::nothing,      &Animations::blinkRandom},
         {&Patterns::meteor,        &Animations::cycle},
         {&Patterns::fourPoints,    &Animations::cycle},
@@ -88,7 +91,7 @@ const PatternDefinitionList pattern_list = {
 };
 
 void setup() {
-    Serial.begin(9600);
+//    Serial.begin(9600);
 
     // Initialize the circuit playground board
     CircuitPlayground.begin();
@@ -134,15 +137,15 @@ void checkEncoderInput() {
     if (b != ClickEncoder::Open) {
         switch (b) {
             case ClickEncoder::Clicked:
-                Serial.println("Button clicked");
+//                Serial.println("Button clicked");
                 cycleSettingsMode();
                 break;
             case ClickEncoder::DoubleClicked:
-                Serial.println("Button double clicked");
+//                Serial.println("Button double clicked");
                 encoder->setAccelerationEnabled(!encoder->getAccelerationEnabled());
                 break;
             case ClickEncoder::Released:
-                Serial.println("Button held");
+//                Serial.println("Button held");
                 totem->changeDirection();
                 break;
             default:;
@@ -174,16 +177,16 @@ void patternSpeedMode() {
     if (animationSpeed < 2) {
         animationSpeed = 0;
     }
-    Serial.print("Speed: ");
-    Serial.println(animationSpeed);
+//    Serial.print("Speed: ");
+//    Serial.println(animationSpeed);
 }
 
 void patternColorMode() {
     totem->setHue(totem->getHue() + 3);
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
-    Serial.print("Hue: ");
-    Serial.println(totem->getHue());
+//    Serial.print("Hue: ");
+//    Serial.println(totem->getHue());
 }
 
 void patternFadeMode() {
@@ -192,22 +195,76 @@ void patternFadeMode() {
     } else if (currentEncoderValue < previousEncoderValue) {
         totem->setFade(Utils::clamp(totem->getFade() - 1, 100));
     }
-    Serial.print("Fade: ");
-    Serial.println(totem->getFade());
+//    Serial.print("Fade: ");
+//    Serial.println(totem->getFade());
+}
+
+void patternBrightnessMode() {
+    if (currentEncoderValue > previousEncoderValue) {
+        totem->setBrightness(totem->getBrightness() + 1);
+    } else if (currentEncoderValue < previousEncoderValue) {
+        totem->setBrightness(totem->getBrightness() - 1);
+    }
+    // TODO: This is a bit of a hack so the pattern will update. Dunno if I should be doing this all the time.
+    totem->clearStrip();
+    (patterns->*pattern_list[currentPattern].pattern)();
+
+//    Serial.print("Brightness: ");
+//    Serial.println(totem->getBrightness());
+}
+
+void patternSaturationMode() {
+    if (currentEncoderValue > previousEncoderValue) {
+        totem->setSaturation(totem->getSaturation() + 1);
+    } else if (currentEncoderValue < previousEncoderValue) {
+        totem->setSaturation(totem->getSaturation() - 1);
+    }
+    // TODO: This is a bit of a hack so the pattern will update. Dunno if I should be doing this all the time.
+    totem->clearStrip();
+    (patterns->*pattern_list[currentPattern].pattern)();
+
+//    Serial.print("Saturation: ");
+//    Serial.println(totem->getSaturation());
+}
+
+void sensitivitySelectMode() {
+    if (currentEncoderValue > previousEncoderValue) {
+        equalizer->setSensitivity(Utils::clamp(equalizer->getSensitivity() + 20, 1024));
+    } else if (currentEncoderValue < previousEncoderValue) {
+        equalizer->setSensitivity(Utils::clamp(equalizer->getSensitivity() - 20, 1024));
+    }
+
+    // TODO: This is a bit of a hack so the pattern will update. Dunno if I should be doing this all the time.
+    totem->clearStrip();
+    (patterns->*pattern_list[currentPattern].pattern)();
+
+//    Serial.print("Sensitivity: ");
+//    Serial.println(equalizer->getSensitivity());
+}
+
+void frequencySelectMode() {
+    if (currentEncoderValue > previousEncoderValue) {
+        equalizer->setFrequencyOffset(Utils::clamp(equalizer->getFrequencyOffset() + 1, 7));
+    } else if (currentEncoderValue < previousEncoderValue) {
+        equalizer->setSensitivity(Utils::clamp(equalizer->getSensitivity() - 1, 7));
+    }
+
+//    Serial.print("Frequency: ");
+//    Serial.println(equalizer->getSensitivity());
 }
 
 void nextPattern() {
     currentPattern = Utils::wrap(currentPattern + 1, ARRAY_SIZE(pattern_list)-1);
-    Serial.print("Next pattern: ");
-    Serial.println(currentPattern);
+//    Serial.print("Next pattern: ");
+//    Serial.println(currentPattern);
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
 }
 
 void previousPattern() {
     currentPattern = Utils::wrap(currentPattern - 1, ARRAY_SIZE(pattern_list)-1);
-    Serial.print("Previous pattern: ");
-    Serial.println(currentPattern);
+//    Serial.print("Previous pattern: ");
+//    Serial.println(currentPattern);
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
 }

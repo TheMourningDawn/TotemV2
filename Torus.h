@@ -18,6 +18,7 @@ private:
     uint8_t hue;
     uint8_t fade;
     uint8_t brightness;
+    uint8_t saturation;
     boolean direction;
 public:
     Torus();
@@ -25,6 +26,7 @@ public:
     CRGB *getStrip();
 
     //Set and fill operations
+    void setPixel(uint8_t index);
     void setPixel(uint8_t index, CRGB color);
     void setPixel(uint8_t index, uint8_t hue);
     void setRightPixel(CRGB color);
@@ -44,6 +46,7 @@ public:
     void shiftCounterClockwise(int shiftFromPixel);
 
     //Modifications
+    void fadePixel(uint8_t index);
     void fadePixel(uint8_t index, int fade);
 
     //Retrieval
@@ -76,6 +79,9 @@ public:
 
     uint8_t getBrightness();
     void setBrightness(uint8_t newBrightness);
+
+    uint8_t getSaturation();
+    void setSaturation(uint8_t newSatuation);
 };
 
 #endif

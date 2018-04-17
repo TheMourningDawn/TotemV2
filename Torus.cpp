@@ -11,6 +11,7 @@ Torus::Torus(CRGB *ledStrip, uint8_t bottomIndex) : strip(ledStrip) {
   hue = 0;
   fade = 20;
   brightness = 255;
+  saturation = 255;
   bottomIndex = bottomIndex;
   topIndex = (stripLength/2 + bottomIndex) % stripLength;
   rightIndex = (stripLength/4*3 + bottomIndex) % stripLength;
@@ -37,12 +38,24 @@ uint8_t Torus::getBottomPixelIndex() {
   return bottomIndex;
 }
 
+void Torus::clearStrip() {
+  fill_solid( &(strip[0]), length(), CRGB::Black);
+}
+
+/*
+ * Sets pixel at index with current
+ * hue/saturation/brightness global values
+ */
+void Torus::setPixel(uint8_t index) {
+  strip[index] = CHSV(hue, saturation, brightness);
+}
+
 void Torus::setPixel(uint8_t index, CRGB color) {
   strip[index] = color;
 }
 
 void Torus::setPixel(uint8_t index, uint8_t hue) {
-  strip[index].setHue(hue);
+    strip[index] = CHSV(hue, saturation, brightness);
 }
 
 void Torus::setRightPixel(CRGB color) {
@@ -57,8 +70,8 @@ void Torus::setBottomPixel(CRGB color) {
   strip[bottomIndex] = color;
 }
 
-void Torus::clearStrip() {
-  fill_solid( &(strip[0]), length(), CRGB::Black);
+void Torus::setTopPixel(CRGB color) {
+  strip[topIndex] = color;
 }
 
 void Torus::fill(int fromIndex, int toIndex, CRGB color) {
@@ -69,7 +82,7 @@ void Torus::fill(int fromIndex, int toIndex, CRGB color) {
   }
   int numberToFill = abs(toIndex - fromIndex) + 1;
   int startFillFrom = fromIndex;
-  fill_solid( &(strip[startFillFrom]), numberToFill, color );
+  fill_solid( &(strip[startFillFrom]), numberToFill, color);
 }
 
 void Torus::fill(int fromIndex, int toIndex, uint8_t color) {
@@ -80,11 +93,11 @@ void Torus::fill(int fromIndex, int toIndex, uint8_t color) {
   }
   int numberToFill = abs(toIndex - fromIndex) + 1;
   int startFillFrom = fromIndex;
-  fill_solid( &(strip[startFillFrom]), numberToFill, CHSV(color, 255, 255));
+  fill_solid( &(strip[startFillFrom]), numberToFill, CHSV(color, saturation, brightness));
 }
 
-void Torus::setTopPixel(CRGB color) {
-  strip[topIndex] = color;
+void Torus::fadePixel(uint8_t index) {
+  strip[index].fadeLightBy(fade);
 }
 
 void Torus::fadePixel(uint8_t index, int fade) {
@@ -170,8 +183,16 @@ void Torus::setFade(uint8_t fadeValue) {
 uint8_t Torus::getBrightness() {
   return brightness;
 }
+
 void Torus::setBrightness(uint8_t newBrightness) {
   brightness = newBrightness;
+}
+
+uint8_t Torus::getSaturation() {
+  return saturation;
+}
+void Torus::setSaturation(uint8_t newSaturation) {
+  saturation = newSaturation;
 }
 
 void Torus::shiftClockwise(int shiftFromPixel) {

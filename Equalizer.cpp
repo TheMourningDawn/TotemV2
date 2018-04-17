@@ -1,6 +1,9 @@
 #include "Equalizer.h"
 
 Equalizer::Equalizer() {
+    sensitivity = 100;
+    frequencyOffset = 0;
+
     pinMode(RESET_PIN, OUTPUT); // reset
     pinMode(STROBE_PIN, OUTPUT); // strobe
     digitalWrite(RESET_PIN, LOW); // reset low
@@ -24,5 +27,33 @@ void Equalizer::readAudioFrequencies() {
 //        Serial.print(" ");
 //    }
 //    Serial.println("");
+}
+
+uint8_t Equalizer::getFrequencyOffset() {
+    return frequencyOffset;
+}
+
+void Equalizer::setFrequencyOffset(uint8_t newFrequencyOffset) {
+    frequencyOffset = newFrequencyOffset;
+}
+
+void Equalizer::resetFrequencyOffset() {
+    frequencyOffset = 0;
+}
+
+uint16_t Equalizer::getSensitivity() {
+    return sensitivity;
+}
+
+void Equalizer::setSensitivity(uint16_t newSensitivity) {
+    sensitivity = newSensitivity;
+}
+
+uint8_t Equalizer::getBand(uint8_t band) {
+    return map(frequencies[band], sensitivity, 1025, 0, 255);
+}
+
+uint8_t Equalizer::getBand(uint8_t band, uint16_t sensitivityThreshold) {
+    return map(frequencies[band], sensitivityThreshold, 1025, 0, 255);
 }
 
