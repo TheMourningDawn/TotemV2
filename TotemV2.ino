@@ -53,7 +53,8 @@ typedef Mode ModeList[];
 const ModeList modes = {
         patternSelectMode,
         patternSpeedMode,
-        patternColorMode
+        patternColorMode,
+        patternFadeMode
 };
 
 typedef void (Patterns::*Pattern)();
@@ -68,8 +69,9 @@ typedef PatternDefinition PatternDefinitionList[];
 
 //TODO: Get a better name, yo
 const PatternDefinitionList pattern_list = {
-        {&Patterns::meteor,        &Animations::cycle},
         {&Patterns::whatever,      &Animations::cycle},
+        {&Patterns::nothing,      &Animations::meteor},
+        {&Patterns::meteor,        &Animations::cycle},
         {&Patterns::fourPoints,    &Animations::cycle},
         {&Patterns::nothing,       &Animations::bpm},
         {&Patterns::nothing,       &Animations::juggle},
@@ -176,11 +178,21 @@ void patternSpeedMode() {
 }
 
 void patternColorMode() {
-    totem->setHue(totem->getHue() + 5);
+    totem->setHue(totem->getHue() + 3);
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
     Serial.print("Hue: ");
     Serial.println(totem->getHue());
+}
+
+void patternFadeMode() {
+    if (currentEncoderValue > previousEncoderValue) {
+        totem->setFade(Utils::clamp(totem->getFade() + 1, 100));
+    } else if (currentEncoderValue < previousEncoderValue) {
+        totem->setFade(Utils::clamp(totem->getFade() - 1, 100));
+    }
+    Serial.print("Fade: ");
+    Serial.println(totem->getFade());
 }
 
 void nextPattern() {

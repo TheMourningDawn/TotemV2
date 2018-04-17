@@ -9,6 +9,8 @@ Torus::Torus(CRGB *ledStrip, uint8_t bottomIndex) : strip(ledStrip) {
   direction = false;
   stripLength = 80;
   hue = 0;
+  fade = 20;
+  brightness = 255;
   bottomIndex = bottomIndex;
   topIndex = (stripLength/2 + bottomIndex) % stripLength;
   rightIndex = (stripLength/4*3 + bottomIndex) % stripLength;
@@ -155,6 +157,21 @@ void Torus::setHue(uint8_t newHue) {
 
 void Torus::incrementHue(uint8_t amount) {
   hue += amount;
+}
+
+uint8_t Torus::getFade() {
+    return fade;
+}
+
+void Torus::setFade(uint8_t fadeValue) {
+    fade = fadeValue;
+}
+
+uint8_t Torus::getBrightness() {
+  return brightness;
+}
+void Torus::setBrightness(uint8_t newBrightness) {
+  brightness = newBrightness;
 }
 
 void Torus::shiftClockwise(int shiftFromPixel) {

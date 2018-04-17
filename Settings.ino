@@ -1,5 +1,5 @@
 void cycleSettingsMode() {
-	currentMode = Utils::clamp(currentMode+1, ARRAY_SIZE(modes));
+	currentMode = Utils::wrap(currentMode+1, ARRAY_SIZE(modes)-1);
 	Serial.print("Current settings mode: ");
 	Serial.println(currentMode);
 	displaySettingMode();
@@ -29,6 +29,11 @@ void displaySettingMode() {
 		settings_strip[3].setHue(165);
 		FastLED.show();
 		break;
+    case 4:
+        setSettingStrip(CRGB::Black, 5);
+        settings_strip[4].setHue(205);
+        FastLED.show();
+        break;
 	}
 }
 

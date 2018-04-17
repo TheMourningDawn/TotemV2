@@ -28,32 +28,9 @@ void Animations::cycle() {
 }
 
 void Animations::meteor() {
-  meteorChaser(15, 12, 160, false);
-}
-
-//TODO: Make sure the fade is working...dunt think it is, or maybe just replace it with a simpler one
-void Animations::meteorChaser(uint16_t meteorBodyPixel, uint8_t tailLength, uint16_t fadeValue, bool rainbowTail) {
-  uint16_t i;
-  int fadeSpectrum = fadeValue;
-  int fadeIncrement = (256 - fadeValue) / tailLength;
-
-  if (rainbowTail == true) {
-    fill_rainbow(&(totem->getStrip()[meteorBodyPixel]), tailLength, hue);
-  } else {
-    if (animationDirection == true) {
-      for (i = meteorBodyPixel; i > (meteorBodyPixel - tailLength); i--) {
-        totem->setPixel(i, hue);
-        totem->fadePixel(i, fadeSpectrum);
-        fadeSpectrum += fadeIncrement;
-      }
-    } else {
-      for (i = (meteorBodyPixel - tailLength); i < meteorBodyPixel; i++) {
-        totem->setPixel(i, hue);
-        totem->fadePixel(i, fadeSpectrum);
-        fadeSpectrum += fadeIncrement;
-      }
-    }
-  }
+    fadeToBlackBy(totem->getStrip(), totem->length(), totem->getFade());
+    currentIndex = Utils::wrap(currentIndex+1, totem->length()-1);
+    totem->setPixel(currentIndex, totem->getHue());
 }
 
 void Animations::wipeRainbow() {
@@ -75,7 +52,7 @@ void Animations::fourPoints(uint8_t point1, uint8_t point2, uint8_t point3, uint
   }
 }
 
-//TODO: Use this
+//TODO: Use this to see what is lol
 void Animations::blinkRandom(uint8_t numberRandomPixels, bool randomColor) {
   uint8_t randomPixel = random8(60);
   uint8_t randomHue = random8();

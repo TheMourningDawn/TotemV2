@@ -49,7 +49,6 @@ void Patterns::meteorChaser(uint16_t meteorBodyPixel, uint8_t tailLength, uint16
       }
     }
   }
-  FastLED.show();
 }
 
 void Patterns::wipeRainbow() {
