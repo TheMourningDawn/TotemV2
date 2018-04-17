@@ -29,14 +29,17 @@ void Animations::cycle() {
 
 void Animations::meteor() {
     fadeToBlackBy(totem->getStrip(), totem->length(), totem->getFade());
-    currentIndex = Utils::wrap(currentIndex+1, totem->length()-1);
+    if(totem->getDirection() == true) {
+        currentIndex = Utils::wrap(currentIndex+1, totem->length()-1);
+    } else {
+        currentIndex = Utils::wrap(currentIndex-1, totem->length()-1);
+    }
     totem->setPixel(currentIndex, totem->getHue());
 }
 
 void Animations::wipeRainbow() {
-  fill_rainbow(&(totem->getStrip()[0]), totem->length()-1, 0);
+  fill_rainbow(&(totem->getStrip()[0]), totem->length()-1, 20);
 }
-
 
 //TODO: consolodate this to just one function using top/bottom/right/left indexes.
 // dont see much point in making this one configurable in any way
@@ -53,17 +56,13 @@ void Animations::fourPoints(uint8_t point1, uint8_t point2, uint8_t point3, uint
 }
 
 //TODO: Use this to see what is lol
-void Animations::blinkRandom(uint8_t numberRandomPixels, bool randomColor) {
-  uint8_t randomPixel = random8(60);
+void Animations::blinkRandom() {
+  uint8_t randomPixel = random8(totem->length()-1);
   uint8_t randomHue = random8();
   for (int i = 0; i < totem->length(); i++) {
-    totem->setPixel(i, CRGB::Black);
+    totem->setPixel(i, CRGB(0, 0, 0));
     if(randomPixel == i) {
-      if(randomColor == true) {
-        totem->setPixel(i, hue);
-      } else {
         totem->setPixel(i, randomHue);
-      }
     }
   }
 }

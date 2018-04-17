@@ -71,6 +71,7 @@ typedef PatternDefinition PatternDefinitionList[];
 const PatternDefinitionList pattern_list = {
         {&Patterns::whatever,      &Animations::cycle},
         {&Patterns::nothing,      &Animations::meteor},
+        {&Patterns::nothing,      &Animations::blinkRandom},
         {&Patterns::meteor,        &Animations::cycle},
         {&Patterns::fourPoints,    &Animations::cycle},
         {&Patterns::nothing,       &Animations::bpm},
