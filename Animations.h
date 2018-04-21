@@ -1,7 +1,7 @@
 #ifndef ANIMATIONS_H
 #define ANIMATIONS_H
 
-#include "TimerOne.h"
+//#include "TimerOne.h"
 #include "Torus.h"
 #include "Equalizer.h"
 #include "Utils.h"
@@ -20,12 +20,6 @@ private:
   uint8_t currentIndex; //Used for keeping track of a moving index
   uint8_t tempCounter; //Secondary track keeping int for whatever
   boolean animationDirection;
-  uint16_t spectrum[BINS]; // FFT spectrum output buffer
-
-  uint8_t lvl[FRAMES][BINS]; // Bin levels for the prior #FRAMES frames
-  uint8_t avgLo[BINS];       // Pseudo rolling averages for bins -- lower and
-  uint8_t avgHi[BINS];       // upper limits -- for dynamic level adjustment.
-  uint8_t frameIdx = 0;      // Counter for lvl storage
 public:
   Animations();
   Animations(Torus *totem, Equalizer *equalizer);
@@ -46,6 +40,7 @@ public:
   void hemiola();
 
   //testing
+  void simonSaysDropTheBase();
   void wipeInfinity();
   void wipeRandom();
   void waterfallEqualizer();

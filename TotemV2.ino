@@ -73,8 +73,9 @@ typedef PatternDefinition PatternDefinitionList[];
 //TODO: Get a better name, yo
 const PatternDefinitionList pattern_list = {
         {&Patterns::nothing,      &Animations::meteor},
-//        {&Patterns::whatever,      &Animations::cycle}, //TODO: Something wrong with this, causing resets
+        {&Patterns::nothing,      &Animations::simonSaysDropTheBase},
         {&Patterns::nothing,      &Animations::blinkRandom},
+//        {&Patterns::whatever,      &Animations::cycle}, //TODO: Something wrong with this, causing resets
         {&Patterns::meteor,        &Animations::cycle},
         {&Patterns::fourPoints,    &Animations::cycle},
         {&Patterns::nothing,       &Animations::bpm},
@@ -91,7 +92,7 @@ const PatternDefinitionList pattern_list = {
 };
 
 void setup() {
-//    Serial.begin(9600);
+    Serial.begin(9600);
 
     // Initialize the circuit playground board
     CircuitPlayground.begin();

@@ -50,7 +50,11 @@ void Equalizer::setSensitivity(uint16_t newSensitivity) {
 }
 
 uint8_t Equalizer::getBand(uint8_t band) {
-    return map(frequencies[band], sensitivity, 1025, 0, 255);
+    if(frequencies[band] > sensitivity) {
+        return map(frequencies[band], sensitivity, 1025, 0, 255);
+    } else {
+        return 0;
+    }
 }
 
 uint8_t Equalizer::getBand(uint8_t band, uint16_t sensitivityThreshold) {

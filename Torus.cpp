@@ -14,8 +14,8 @@ Torus::Torus(CRGB *ledStrip, uint8_t bottomIndex) : strip(ledStrip) {
   saturation = 255;
   bottomIndex = bottomIndex;
   topIndex = (stripLength/2 + bottomIndex) % stripLength;
-  rightIndex = (stripLength/4*3 + bottomIndex) % stripLength;
-  leftIndex = (stripLength/4 + bottomIndex) % stripLength;
+  leftIndex = (stripLength/4*3 + bottomIndex) % stripLength;
+  rightIndex = (stripLength/4 + bottomIndex) % stripLength;
 }
 
 CRGB* Torus::getStrip() {
@@ -76,7 +76,7 @@ void Torus::setTopPixel(CRGB color) {
 
 void Torus::fill(int fromIndex, int toIndex, CRGB color) {
   if(toIndex < fromIndex) {
-    //We're jumping the gap at the end...just split it recurse
+    //We're jumping the gap at the end...just split it and recurse
     fill(0, toIndex, color);
     toIndex = length()-1;
   }
@@ -86,14 +86,25 @@ void Torus::fill(int fromIndex, int toIndex, CRGB color) {
 }
 
 void Torus::fill(int fromIndex, int toIndex, uint8_t color) {
+  Serial.print("Filling from: ");
+  Serial.print(fromIndex);
+  Serial.print(" , Filling to: ");
+  Serial.println(toIndex);
   if(toIndex < fromIndex) {
-    //We're jumping the gap at the end...just split it recurse
+    //We're jumping the gap at the end...just split it and recurse
     fill(0, toIndex, color);
     toIndex = length()-1;
   }
-  int numberToFill = abs(toIndex - fromIndex) + 1;
+  int numberToFill = abs(toIndex - fromIndex) +  1;
   int startFillFrom = fromIndex;
   fill_solid( &(strip[startFillFrom]), numberToFill, CHSV(color, saturation, brightness));
+}
+
+void wipe(int fromIndex, int toIndex, CRGB color) {
+
+}
+void wipe(int fromIndex, int toIndex, uint8_t color) {
+
 }
 
 void Torus::fadePixel(uint8_t index) {

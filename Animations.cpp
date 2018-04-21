@@ -10,7 +10,6 @@ Animations::Animations(Torus *totem, Equalizer *equalizer) : totem(totem), equal
   hue = 0;
   currentIndex = 0;
   tempCounter = 0;
-  uint16_t spectrum[BINS];
 }
 
 
@@ -55,7 +54,6 @@ void Animations::fourPoints(uint8_t point1, uint8_t point2, uint8_t point3, uint
   }
 }
 
-//TODO: Use this to see what is lol
 void Animations::blinkRandom() {
   uint8_t randomPixel = random8(totem->length()-1);
   uint8_t randomHue = random8();
@@ -144,6 +142,34 @@ void Animations::wipeSolidFromBottom() {
  *
  * Trying new things!
  */
+
+void Animations::simonSaysDropTheBase() {
+    equalizer->readAudioFrequencies();
+
+    if(equalizer->getBand(0) > 0) {
+        totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), equalizer->getBand(0));
+    } else {
+        totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), CRGB(0, 0, 0));
+    }
+    if(equalizer->getBand(1) > 0) {
+        totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), equalizer->getBand(1));
+    } else {
+        totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), CRGB(0, 0, 0));
+    }
+    if(equalizer->getBand(2) > 0) {
+        totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), equalizer->getBand(2));
+    } else {
+        totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), CRGB(0, 0, 0));
+    }
+    if(equalizer->getBand(3) > 0) {
+        totem->fill(totem->getLeftPixelIndex(), totem->length()-1, equalizer->getBand(3));
+    } else {
+        totem->fill(totem->getLeftPixelIndex(), totem->length()-1, CRGB(0, 0, 0));
+    }
+
+
+
+}
 
 void Animations::wipeInfinity() {
   for (uint8_t i = 0; i < totem->length()-1; i++) {
