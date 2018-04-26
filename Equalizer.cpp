@@ -22,11 +22,6 @@ void Equalizer::readAudioFrequencies() {
         frequencies[band] = analogRead(EQ_PIN); // store left band reading
         digitalWrite(STROBE_PIN, HIGH); // reset the strobe pin
     }
-//    for(int i=0;i<7;i++) {
-//        Serial.print(frequencies[i]);
-//        Serial.print(" ");
-//    }
-//    Serial.println("");
 }
 
 uint8_t Equalizer::getFrequencyOffset() {
@@ -50,7 +45,7 @@ void Equalizer::setSensitivity(uint16_t newSensitivity) {
 }
 
 uint8_t Equalizer::getBand(uint8_t band) {
-    if(frequencies[band] > sensitivity) {
+    if (frequencies[band] > sensitivity) {
         return map(frequencies[band], sensitivity, 1025, 0, 255);
     } else {
         return 0;

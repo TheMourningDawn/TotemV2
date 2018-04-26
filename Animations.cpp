@@ -6,15 +6,15 @@
 Animations::Animations() {}
 
 Animations::Animations(Torus *totem, Equalizer *equalizer) : totem(totem), equalizer(equalizer) {
-  animationDirection = true;
-  hue = 0;
-  currentIndex = 0;
-  tempCounter = 0;
+    animationDirection = true;
+    hue = 0;
+    currentIndex = 0;
+    tempCounter = 0;
 
-  pos = 6;  // Starting center position of pupil
+    pos = 6;  // Starting center position of pupil
     increment = 2 * 3.14159 / totem->length(); // distance between pixels in radians
-     MomentumH = 0; // horizontal component of pupil rotational inertia
-     MomentumV = 0; // vertical component of pupil rotational inertia
+    MomentumH = 0; // horizontal component of pupil rotational inertia
+    MomentumV = 0; // vertical component of pupil rotational inertiaÒ
 }
 
 
@@ -28,46 +28,46 @@ Animations::Animations(Torus *totem, Equalizer *equalizer) : totem(totem), equal
  */
 
 void Animations::cycle() {
-  totem->cycle();
+    totem->cycle();
 }
 
 void Animations::meteor() {
     fadeToBlackBy(totem->getStrip(), totem->length(), totem->getFade());
-    if(totem->getDirection() == true) {
-        currentIndex = Utils::wrap(currentIndex+1, totem->length()-1);
+    if (totem->getDirection() == true) {
+        currentIndex = Utils::wrap(currentIndex + 1, totem->length() - 1);
     } else {
-        currentIndex = Utils::wrap(currentIndex-1, totem->length()-1);
+        currentIndex = Utils::wrap(currentIndex - 1, totem->length() - 1);
     }
     totem->setPixel(currentIndex, totem->getHue());
 }
 
 void Animations::wipeRainbow() {
-  fill_rainbow(&(totem->getStrip()[0]), totem->length()-1, 20);
+    fill_rainbow(&(totem->getStrip()[0]), totem->length() - 1, 20);
 }
 
 //TODO: consolodate this to just one function using top/bottom/right/left indexes.
 // dont see much point in making this one configurable in any way
 void Animations::fourPoints() {
-  fourPoints(0, 20, 40, 60);
+    fourPoints(0, 20, 40, 60);
 }
 
 void Animations::fourPoints(uint8_t point1, uint8_t point2, uint8_t point3, uint8_t point4) {
-  for (uint8_t i = 0; i < totem->length(); i++) {
-    if (i == point1 || i == point2 || i == point3 || i == point4) {
-      totem->setPixel(i, hue);
+    for (uint8_t i = 0; i < totem->length(); i++) {
+        if (i == point1 || i == point2 || i == point3 || i == point4) {
+            totem->setPixel(i, hue);
+        }
     }
-  }
 }
 
 void Animations::blinkRandom() {
-  uint8_t randomPixel = random8(totem->length()-1);
-  uint8_t randomHue = random8();
-  for (int i = 0; i < totem->length(); i++) {
-    totem->setPixel(i, CRGB(0, 0, 0));
-    if(randomPixel == i) {
-        totem->setPixel(i, randomHue);
+    uint8_t randomPixel = random8(totem->length() - 1);
+    uint8_t randomHue = random8();
+    for (int i = 0; i < totem->length(); i++) {
+        totem->setPixel(i, CRGB(0, 0, 0));
+        if (randomPixel == i) {
+            totem->setPixel(i, randomHue);
+        }
     }
-  }
 }
 
 // random colored speckles that blink in and fade smoothly
@@ -76,7 +76,8 @@ void Animations::confetti() {
     uint8_t pos = random16(totem->length());
     totem->setPixel(pos, CHSV(totem->getHue() + random8(64), 200, 200));
 
-    EVERY_N_MILLISECONDS(20) { totem->incrementHue(1); }
+    EVERY_N_MILLISECONDS(20)
+    { totem->incrementHue(1); }
 }
 
 // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
@@ -85,19 +86,21 @@ void Animations::bpm() {
     CRGBPalette16 palette = PartyColors_p;
     uint8_t beat = beatsin8(BeatsPerMinute, 64, 255);
     for (int i = 0; i < totem->length(); i++) { //9948
-      totem->setPixel(i, ColorFromPalette(palette, totem->getHue() + (i * 2), beat - hue + (i * 8)));
+        totem->setPixel(i, ColorFromPalette(palette, totem->getHue() + (i * 2), beat - hue + (i * 8)));
     }
-  
-    EVERY_N_MILLISECONDS(20) { totem->incrementHue(1); }
+
+    EVERY_N_MILLISECONDS(20)
+    { totem->incrementHue(1); }
 }
 
 // a colored dot sweeping back and forth, with fading trails
 void Animations::sinelon() {
     fadeToBlackBy(totem->getStrip(), totem->length(), 10);
-    int pos = beatsin16(13, 0, totem->length()-1);
+    int pos = beatsin16(13, 0, totem->length() - 1);
     totem->setPixel(pos, CHSV(totem->getHue(), 200, 192));
 
-    EVERY_N_MILLISECONDS(20) { totem->incrementHue(1); }
+    EVERY_N_MILLISECONDS(20)
+    { totem->incrementHue(1); }
 }
 
 void Animations::juggle() {
@@ -105,11 +108,12 @@ void Animations::juggle() {
     fadeToBlackBy(totem->getStrip(), totem->length(), 20);
     byte dothue = 0;
     for (int i = 0; i < 6; i++) {
-      totem->getStrip()[beatsin16(i + 5, 0, totem->length()-1)] |= CHSV(dothue, 200, 180);
-      dothue += 32;
+        totem->getStrip()[beatsin16(i + 5, 0, totem->length() - 1)] |= CHSV(dothue, 200, 180);
+        dothue += 32;
     }
 
-    EVERY_N_MILLISECONDS(20) { totem->incrementHue(1); }
+    EVERY_N_MILLISECONDS(20)
+    { totem->incrementHue(1); }
 }
 
 
@@ -124,21 +128,21 @@ void Animations::juggle() {
 
 //TODO: Put in the animation speed, yo
 void Animations::wipeSolidFromBottom() {
-  uint8_t i;
-  if (totem->getDirection() == true) {
-    for (i = 0; i < totem->length()-1; i++) {
-      totem->setPixel(i, totem->getHue());
-      FastLED.show();
-      delay(20);
+    uint8_t i;
+    if (totem->getDirection() == true) {
+        for (i = 0; i < totem->length() - 1; i++) {
+            totem->setPixel(i, totem->getHue());
+            FastLED.show();
+            delay(20);
+        }
+    } else {
+        for (i = totem->length() - 1; i >= 1; --i) {
+            totem->setPixel(i - 1, totem->getHue());
+            FastLED.show();
+            delay(20);
+        }
     }
-  } else {
-    for (i = totem->length()-1; i >= 1; --i) {
-      totem->setPixel(i - 1, totem->getHue());
-      FastLED.show();
-      delay(20);
-    }
-  }
-  totem->incrementHue(random8(100));
+    totem->incrementHue(random8(100));
 }
 
 
@@ -151,95 +155,97 @@ void Animations::wipeSolidFromBottom() {
 void Animations::simonSaysDropTheBase() {
     equalizer->readAudioFrequencies();
 
-    if(equalizer->getBand(0) > 0) {
+    if (equalizer->getBand(0) > 0) {
         totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), equalizer->getBand(0));
     } else {
         totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), CRGB(0, 0, 0));
     }
-    if(equalizer->getBand(1) > 0) {
+    if (equalizer->getBand(1) > 0) {
         totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), equalizer->getBand(1));
     } else {
         totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), CRGB(0, 0, 0));
     }
-    if(equalizer->getBand(2) > 0) {
+    if (equalizer->getBand(2) > 0) {
         totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), equalizer->getBand(2));
     } else {
         totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), CRGB(0, 0, 0));
     }
-    if(equalizer->getBand(3) > 0) {
-        totem->fill(totem->getLeftPixelIndex(), totem->length()-1, equalizer->getBand(3));
+    if (equalizer->getBand(3) > 0) {
+        totem->fill(totem->getLeftPixelIndex(), totem->length() - 1, equalizer->getBand(3));
     } else {
-        totem->fill(totem->getLeftPixelIndex(), totem->length()-1, CRGB(0, 0, 0));
+        totem->fill(totem->getLeftPixelIndex(), totem->length() - 1, CRGB(0, 0, 0));
     }
-
 
 
 }
 
 void Animations::wipeInfinity() {
-  for (uint8_t i = 0; i < totem->length()-1; i++) {
-    totem->setPixel(i, totem->getHue());
-    FastLED.show();
-    delay(20);
-    totem->incrementHue(4);
-  }
+    for (uint8_t i = 0; i < totem->length() - 1; i++) {
+        totem->setPixel(i, totem->getHue());
+        FastLED.show();
+        delay(20);
+        totem->incrementHue(4);
+    }
 }
 
 
 void Animations::wipeRandom() {
-  totem->setPixel(currentIndex, CHSV(totem->getHue(), 255, 255));
-  if(totem->getDirection() == true) {
-    currentIndex++;
-    if(currentIndex > totem->length()-1) {
-      currentIndex = 0;
+    totem->setPixel(currentIndex, CHSV(totem->getHue(), 255, 255));
+    if (totem->getDirection() == true) {
+        currentIndex++;
+        if (currentIndex > totem->length() - 1) {
+            currentIndex = 0;
+        }
+    } else {
+        currentIndex--;
+        if (currentIndex > totem->length() - 1) {
+            currentIndex = totem->length() - 1;
+        }
     }
-  } else {
-    currentIndex--;
-    if(currentIndex > totem->length()-1) {
-      currentIndex = totem->length()-1;
+    //What I want is to change the color at some random point after it's gone 1/4 of the circle
+    //the only thing I can think of is oddly complicated and maybe inconsistant?
+    tempCounter++;
+    if (tempCounter > totem->length() / 4 + random8(0, totem->length() / 2)) {
+        totem->incrementHue(random8(20, 60));
+        tempCounter = 0;
     }
-  }
-  //What I want is to change the color at some random point after it's gone 1/4 of the circle
-  //the only thing I can think of is oddly complicated and maybe inconsistant?
-  tempCounter++;
-  if(tempCounter > totem->length()/4 + random8(0, totem->length()/2)) {
-    totem->incrementHue(random8(20, 60));
-    tempCounter = 0;
-  }
 }
 
 void Animations::waterfallEqualizer() {
-  equalizer->readAudioFrequencies();
-  int spectrumz = 1;
-  int threshold = 140;
-  int offset = 120;
-  if(equalizer->frequencies[spectrumz] > threshold) {
-    int color = map(equalizer->frequencies[spectrumz], threshold, 1024, 0, 255);
-    Utils::wrap(color+offset, 255);
-    totem->setPixel(39, color);
-    totem->getStrip()[39].nscale8_video(color);
-  } else {
-    totem->setPixel(39, CRGB(0,0,0));
-  }
-  totem->shiftClockwise(39);
-  totem->shiftCounterClockwise(39);
+    equalizer->readAudioFrequencies();
+    int spectrumz = 1;
+    int threshold = 140;
+    int offset = 120;
+    if (equalizer->frequencies[spectrumz] > threshold) {
+        int color = map(equalizer->frequencies[spectrumz], threshold, 1024, 0, 255);
+        Utils::wrap(color + offset, 255);
+        totem->setPixel(39, color);
+        totem->getStrip()[39].nscale8_video(color);
+    } else {
+        totem->setPixel(39, CRGB(0, 0, 0));
+    }
+    totem->shiftClockwise(39);
+    totem->shiftCounterClockwise(39);
 }
 
 int8_t i = 0;
 int8_t j = 0;
+
 void Animations::hemiola() {
-    EVERY_N_MILLISECONDS((8/8)*20) {
+    EVERY_N_MILLISECONDS((8 / 8) * 20)
+    {
         i++;
-        i = Utils::wrap(i, totem->length()-1);
+        i = Utils::wrap(i, totem->length() - 1);
         totem->setPixel(i, CHSV(totem->getHue(), 200, 192));
-        totem->setPixel(Utils::wrap(i-1, totem->length()-1), CRGB(0, 0, 0));
+        totem->setPixel(Utils::wrap(i - 1, totem->length() - 1), CRGB(0, 0, 0));
         FastLED.show();
     }
-    EVERY_N_MILLISECONDS((3/4)*20) {
+    EVERY_N_MILLISECONDS((3 / 4) * 20)
+    {
         j++;
-        j = Utils::wrap(j, totem->length()-1);
-        totem->setPixel(j, CHSV(totem->getHue()+120, 200, 192));
-        totem->setPixel(Utils::wrap(j-1, totem->length()-1), CRGB(0, 0, 0));
+        j = Utils::wrap(j, totem->length() - 1);
+        totem->setPixel(j, CHSV(totem->getHue() + 120, 200, 192));
+        totem->setPixel(Utils::wrap(j - 1, totem->length() - 1), CRGB(0, 0, 0));
         FastLED.show();
     }
 }

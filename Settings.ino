@@ -1,14 +1,14 @@
 void cycleSettingsMode() {
-	currentMode = Utils::wrap(currentMode+1, ARRAY_SIZE(modes)-1);
-	Serial.print("Current settings mode: ");
-	Serial.println(currentMode);
-	displaySettingMode();
-	currentEncoderValue = 0;
-	previousEncoderValue = currentEncoderValue; //this is dumb
+    currentMode = Utils::wrap(currentMode + 1, ARRAY_SIZE(modes) - 1);
+    Serial.print("Current settings mode: ");
+    Serial.println(currentMode);
+    displaySettingMode();
+    currentEncoderValue = 0;
+    previousEncoderValue = currentEncoderValue; //this is dumb
 }
 
 void displaySettingMode() {
-	switch (currentMode) {
+    switch (currentMode) {
         case 0:
             setSettingStrip(CRGB::Black, 10);
             settings_strip[0].setHue(15);
@@ -39,32 +39,32 @@ void displaySettingMode() {
             settings_strip[5].setHue(245);
             FastLED.show();
             break;
-		case 6:
-			setSettingStrip(CRGB::Black, 10);
-			settings_strip[6].setHue(255);
-			FastLED.show();
-			break;
+        case 6:
+            setSettingStrip(CRGB::Black, 10);
+            settings_strip[6].setHue(255);
+            FastLED.show();
+            break;
     }
 
 }
 
 void flashSettingsStrip(CRGB color, uint8_t flashDelay, uint8_t flashRepeat) {
-	setSettingStrip(color, 10);
-	FastLED.show();
-	for (uint8_t i = 0; i < flashRepeat; i++) {
-		delay(flashDelay);
-		setSettingStrip(CRGB::Black, 5);
-		FastLED.show();
-		delay(flashDelay);
-		setSettingStrip(color, 5);
-		FastLED.show();
-		Serial.println(flashRepeat);
-	}
+    setSettingStrip(color, 10);
+    FastLED.show();
+    for (uint8_t i = 0; i < flashRepeat; i++) {
+        delay(flashDelay);
+        setSettingStrip(CRGB::Black, 5);
+        FastLED.show();
+        delay(flashDelay);
+        setSettingStrip(color, 5);
+        FastLED.show();
+        Serial.println(flashRepeat);
+    }
 }
 
 void setSettingStrip(CRGB color, uint8_t numberOfDots) {
-	for (int i = 0; i < numberOfDots; i++) {
-		settings_strip[i] = color;
-	}
+    for (int i = 0; i < numberOfDots; i++) {
+        settings_strip[i] = color;
+    }
 }
 

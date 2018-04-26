@@ -10,20 +10,20 @@ FASTLED_USING_NAMESPACE;
 
 class Patterns {
 private:
-  Torus *totem;
+    Torus *totem;
 public:
-  Patterns();
-  Patterns(Torus *totem);
-  void nothing();
-  void meteor();
-  void meteorRainbow();
-  void meteorChaser(uint16_t meteorBodyPixel, uint8_t tailLength, uint16_t fadeValue, bool rainbowTail);
-  void wipeRainbow();
-  void fourPoints();
-  void fourPoints(uint8_t point1, uint8_t point2, uint8_t point3, uint8_t point4);
-  void halfTopBottom();
-  void halfTopBottom(bool animate, CRGB colorTop, CRGB colorBottom);
-  void whatever();
+    Patterns();
+    Patterns(Torus *totem);
+    void nothing();
+    void meteor();
+    void meteorRainbow();
+    void meteorChaser(uint16_t meteorBodyPixel, uint8_t tailLength, uint16_t fadeValue, bool rainbowTail);
+    void wipeRainbow();
+    void fourPoints();
+    void fourPoints(uint8_t point1, uint8_t point2, uint8_t point3, uint8_t point4);
+    void halfTopBottom();
+    void halfTopBottom(bool animate, CRGB colorTop, CRGB colorBottom);
+    void whatever();
 
 };
 

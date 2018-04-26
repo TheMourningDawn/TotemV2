@@ -72,9 +72,9 @@ typedef PatternDefinition PatternDefinitionList[];
 
 //TODO: Get a better name, yo
 const PatternDefinitionList pattern_list = {
-        {&Patterns::nothing,      &Animations::meteor},
-        {&Patterns::nothing,      &Animations::blinkRandom},
-        {&Patterns::nothing,      &Animations::pendulum},
+        {&Patterns::nothing,       &Animations::meteor},
+        {&Patterns::nothing,       &Animations::blinkRandom},
+        {&Patterns::nothing,       &Animations::pendulum},
 //        {&Patterns::whatever,      &Animations::cycle}, //TODO: Something wrong with this, causing resets
         {&Patterns::meteor,        &Animations::cycle},
         {&Patterns::fourPoints,    &Animations::cycle},
@@ -89,7 +89,7 @@ const PatternDefinitionList pattern_list = {
         {&Patterns::nothing,       &Animations::wipeRandom},
         {&Patterns::nothing,       &Animations::hemiola},
         {&Patterns::nothing,       &Animations::waterfallEqualizer},
-        {&Patterns::nothing,      &Animations::simonSaysDropTheBase},
+        {&Patterns::nothing,       &Animations::simonSaysDropTheBase},
 };
 
 void setup() {
@@ -256,7 +256,7 @@ void frequencySelectMode() {
 }
 
 void nextPattern() {
-    currentPattern = Utils::wrap(currentPattern + 1, ARRAY_SIZE(pattern_list)-1);
+    currentPattern = Utils::wrap(currentPattern + 1, ARRAY_SIZE(pattern_list) - 1);
 //    Serial.print("Next pattern: ");
 //    Serial.println(currentPattern);
     totem->clearStrip();
@@ -264,7 +264,7 @@ void nextPattern() {
 }
 
 void previousPattern() {
-    currentPattern = Utils::wrap(currentPattern - 1, ARRAY_SIZE(pattern_list)-1);
+    currentPattern = Utils::wrap(currentPattern - 1, ARRAY_SIZE(pattern_list) - 1);
 //    Serial.print("Previous pattern: ");
 //    Serial.println(currentPattern);
     totem->clearStrip();
