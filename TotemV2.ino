@@ -73,8 +73,8 @@ typedef PatternDefinition PatternDefinitionList[];
 //TODO: Get a better name, yo
 const PatternDefinitionList pattern_list = {
         {&Patterns::nothing,      &Animations::meteor},
-        {&Patterns::nothing,      &Animations::simonSaysDropTheBase},
         {&Patterns::nothing,      &Animations::blinkRandom},
+        {&Patterns::nothing,      &Animations::pendulum},
 //        {&Patterns::whatever,      &Animations::cycle}, //TODO: Something wrong with this, causing resets
         {&Patterns::meteor,        &Animations::cycle},
         {&Patterns::fourPoints,    &Animations::cycle},
@@ -89,6 +89,7 @@ const PatternDefinitionList pattern_list = {
         {&Patterns::nothing,       &Animations::wipeRandom},
         {&Patterns::nothing,       &Animations::hemiola},
         {&Patterns::nothing,       &Animations::waterfallEqualizer},
+        {&Patterns::nothing,      &Animations::simonSaysDropTheBase},
 };
 
 void setup() {
