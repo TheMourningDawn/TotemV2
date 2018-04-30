@@ -6,15 +6,11 @@
 Animations::Animations() {}
 
 Animations::Animations(Torus *totem, Equalizer *equalizer) : totem(totem), equalizer(equalizer) {
+    pendulum = new Pendulum(totem);
     animationDirection = true;
     hue = 0;
     currentIndex = 0;
     tempCounter = 0;
-
-    pos = 6;  // Starting center position of pupil
-    increment = 2 * 3.14159 / totem->length(); // distance between pixels in radians
-    MomentumH = 0; // horizontal component of pupil rotational inertia
-    MomentumV = 0; // vertical component of pupil rotational inertiaÒ
 }
 
 
@@ -230,7 +226,6 @@ void Animations::waterfallEqualizer() {
 
 int8_t i = 0;
 int8_t j = 0;
-
 void Animations::hemiola() {
     EVERY_N_MILLISECONDS((8 / 8) * 20)
     {
@@ -250,80 +245,20 @@ void Animations::hemiola() {
     }
 }
 
-void Animations::pendulum() {
-    Serial.println("Tryna do some pendulum stuff here");
-    CRGB magHeadingBasedColor = CHSV(totem->getHue(), 255, 255);
-    pendulumMode(magHeadingBasedColor, true, false);
+void Animations::pendulumSinglePoint() {
+    pendulumMode(CHSV(totem->getHue(), 255, 255), true);
 }
 
 void Animations::pendulumAntiGravity() {
-    CRGB magHeadingBasedColor = CHSV(totem->getHue(), 255, 255);
-    pendulumMode(magHeadingBasedColor, false, false);
+    pendulumMode(CHSV(totem->getHue(), 255, 255), false);
 }
 
-void Animations::pendulumMirrored() {
-    CRGB magHeadingBasedColor = CHSV(totem->getHue(), 255, 255);
-    pendulumMode(magHeadingBasedColor, false, true);
-}
+void Animations::pendulumMode(CRGB color, bool antiGravity) {
+    fadeToBlackBy(totem->getStrip(), totem->length(), totem->getFade());
 
-void Animations::pendulumMode(CRGB color, bool antiGravity, bool mirroredEyes) {
-    Serial.println("Starting the pendulum");
-    // apply a little frictional damping to keep things in control and prevent perpetual motion
-    MomentumH *= friction;
-    MomentumV *= friction;
+    pendulum->readAccelerometerData();
 
-    // Calculate the horizontal and vertical effect on the virtual pendulum
-    // 'pos' is a pixel address, so we multiply by 'increment' to get radians.
-    float TorqueH = cos(pos * increment);  // peaks at top and bottom of the swing
-    float TorqueV = sin(pos * increment);   // peaks when the pendulum is horizontal
-
-    // Add the incremental acceleration to the existing momentum
-    // This code assumes that the accelerometer is mounted upside-down, level
-    // and with the X-axis pointed forward.  So the Y axis reads the horizontal
-    // acceleration and the inverse of the Z axis is gravity.
-    // For other orientations of the sensor, just change the axis to match.
-    MomentumH += TorqueH * CircuitPlayground.motionX() / swing;
-    if (antiGravity) {
-        MomentumV += TorqueV * -CircuitPlayground.motionY() / gravity;
-    } else {
-        MomentumV -= TorqueV * -CircuitPlayground.motionY() / gravity;
-    }
-
-    Serial.println("Ok, used that accel");
-
-    // Calculate the new position
-    pos += MomentumH + MomentumV;
-
-    // handle the wrap-arounds
-    while (round(pos) < 0) pos += totem->length();
-    while (round(pos) > totem->length() - 1) pos -= totem->length();
-
-    Serial.println("Bout half way");
-
-    int lightOn[round(pupilRadius * 2 + 1)];
-    int lightIndex = 0;
-    for (int i = pos; i > pos - pupilRadius; i--) {
-        lightOn[lightIndex] = Utils::wrap(i, totem->length());
-        lightIndex++;
-    }
-    for (int i = pos; i < pos + pupilRadius; i++) {
-        lightOn[lightIndex] = Utils::wrap(i, totem->length());
-        lightIndex++;
-    }
-    for (int i = 0; i < totem->length(); i++) {
-        int rightIndex = i;
-        boolean turnedOn = false;
-        for (int j = 0; j < (pupilRadius * 2 + 1); j++) {
-            if (lightOn[j] == i) {
-                totem->setPixel(rightIndex, color);
-                turnedOn = true;
-            }
-        }
-        if (turnedOn == false) {
-            totem->setPixel(rightIndex, CRGB(0, 0, 0));
-        }
-    }
-    Serial.println("Perty done");
+    totem->setPixel(pendulum->getPosition());
 }
 
 

@@ -4,6 +4,7 @@
 //#include "TimerOne.h"
 #include "Torus.h"
 #include "Equalizer.h"
+#include "Pendulum.h"
 #include "Utils.h"
 #include <Adafruit_CircuitPlayground.h>
 
@@ -16,6 +17,7 @@ class Animations {
 private:
     Torus *totem;
     Equalizer *equalizer;
+    Pendulum *pendulum;
     uint8_t hue;
     uint8_t currentIndex; //Used for keeping track of a moving index
     uint8_t tempCounter; //Secondary track keeping int for whatever
@@ -27,8 +29,8 @@ private:
     float MomentumH; // horizontal component of pupil rotational inertia
     float MomentumV; // vertical component of pupil rotational inertia
 
-// Tuning constants. (a.k.a. "Fudge Factors)
-// These can be tweaked to adjust the liveliness and sensitivity of the eyes.
+    // Tuning constants. (a.k.a. "Fudge Factors)
+    // These can be tweaked to adjust the liveliness and sensitivity of the pendulum.
     const float friction = 0.985; // frictional damping constant.  1.0 is no friction.
     const float swing = 20;  // arbitrary divisor for gravitational force
     const float gravity = 100;  // arbitrary divisor for lateral acceleration
@@ -59,10 +61,10 @@ public:
     void wipeRandom();
     void waterfallEqualizer();
 
-    void pendulum();
+    void pendulumSinglePoint();
     void pendulumAntiGravity();
     void pendulumMirrored();
-    void pendulumMode(CRGB color, bool antiGravity, bool mirroredEyes);
+    void pendulumMode(CRGB color, bool antiGravity);
 
     //Transition only animations
     void cycle();
