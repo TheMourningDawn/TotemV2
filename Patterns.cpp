@@ -19,53 +19,24 @@ void Patterns::nothing() {
     //literally
 }
 
-void Patterns::meteor() {
-    meteorChaser(30, 25, 50, false);
-}
-
 void Patterns::meteorRainbow() {
-    meteorChaser(20, 25, 50, true);
+    fill_rainbow(&(totem->getStrip()[0]), totem->getFade(), totem->getHue());
 }
 
-void Patterns::meteorChaser(uint16_t meteorBodyPixel, uint8_t tailLength, uint16_t fadeValue, bool rainbowTail) {
-    uint16_t i;
-    int fadeSpectrum = fadeValue;
-    int fadeIncrement = (256 - fadeValue) / tailLength;
-
-    if (rainbowTail == true) {
-        fill_rainbow(&(totem->getStrip()[meteorBodyPixel]), tailLength, totem->getHue());
-    } else {
-        if (totem->getDirection() == true) {
-            for (i = meteorBodyPixel; i > (meteorBodyPixel - tailLength); i--) {
-                totem->setPixel(i, totem->getHue());
-                totem->fadePixel(i, fadeSpectrum);
-                fadeSpectrum += fadeIncrement;
-            }
-        } else {
-            for (i = (meteorBodyPixel - tailLength); i < meteorBodyPixel; i++) {
-                totem->setPixel(i, totem->getHue());
-                totem->fadePixel(i, fadeSpectrum);
-                fadeSpectrum += fadeIncrement;
-            }
-        }
-    }
+void Patterns::rainbow() {
+    fill_rainbow(&(totem->getStrip()[0]), totem->length(), totem->getHue());
 }
 
-void Patterns::wipeRainbow() {
-    fill_rainbow(&(totem->getStrip()[0]), totem->length(), 0);
-}
-
+// Four points equally spaced, moving in the same directio
 void Patterns::fourPoints() {
-    fourPoints(0, 20, 40, 60);
-}
-
-void Patterns::fourPoints(uint8_t point1, uint8_t point2, uint8_t point3, uint8_t point4) {
     for (uint8_t i = 0; i < totem->length(); i++) {
-        if (i == point1 || i == point2 || i == point3 || i == point4) {
+        if (i == totem->getBottomPixelIndex() ||
+            i == totem->getRightPixelIndex() ||
+            i == totem->getLeftPixelIndex() ||
+            i == totem->getTopPixelIndex()) {
             totem->setPixel(i, totem->getHue());
         }
     }
-    FastLED.show();
 }
 
 void Patterns::halfTopBottom() {

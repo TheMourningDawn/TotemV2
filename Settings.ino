@@ -43,6 +43,10 @@ void displaySettingMode() {
             setSettingStrip(CRGB::Black, 10);
             settings_strip[6].setHue(255);
             FastLED.show();
+        case 7:
+            setSettingStrip(CRGB::Black, 10);
+            settings_strip[7].setHue(30);
+            FastLED.show();
             break;
     }
 

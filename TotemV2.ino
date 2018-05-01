@@ -45,8 +45,7 @@ void timerIsr() {
     encoder->service();
 }
 
-// For some reason all these typedefs have to be below a void fuction
-// God only knows why
+// For some reason all these typedefs have to be below a void function, God only knows why.
 typedef void (*Mode)();
 
 typedef Mode ModeList[];
@@ -57,7 +56,8 @@ const ModeList modes = {
         patternFadeMode,
         patternBrightnessMode,
         patternSaturationMode,
-        sensitivitySelectMode
+        sensitivitySelectMode,
+        frequencySelectMode
 };
 
 typedef void (Patterns::*Pattern)();
@@ -73,21 +73,21 @@ typedef PatternDefinition PatternDefinitionList[];
 //TODO: Get a better name, yo
 const PatternDefinitionList pattern_list = {
         {&Patterns::nothing,       &Animations::meteor},
+        {&Patterns::nothing,       &Animations::wipeRainbow},
+        {&Patterns::rainbow,       &Animations::cycle},
+        {&Patterns::nothing,       &Animations::wipeSolidFromBottom},
         {&Patterns::nothing,       &Animations::blinkRandom},
+        {&Patterns::nothing,       &Animations::confetti},
         {&Patterns::nothing,       &Animations::pendulumSinglePoint},
 //        {&Patterns::whatever,      &Animations::cycle}, //TODO: Something wrong with this, causing resets
-        {&Patterns::meteor,        &Animations::cycle},
-        {&Patterns::fourPoints,    &Animations::cycle},
         {&Patterns::nothing,       &Animations::bpm},
         {&Patterns::nothing,       &Animations::juggle},
         {&Patterns::nothing,       &Animations::sinelon},
-        {&Patterns::nothing,       &Animations::confetti},
-        {&Patterns::nothing,       &Animations::wipeSolidFromBottom},
-        {&Patterns::nothing,       &Animations::wipeRainbow},
-        {&Patterns::nothing,       &Animations::wipeInfinity},
-        {&Patterns::halfTopBottom, &Animations::cycle},
         {&Patterns::nothing,       &Animations::wipeRandom},
         {&Patterns::nothing,       &Animations::hemiola},
+        {&Patterns::meteorRainbow, &Animations::cycle},
+        {&Patterns::fourPoints,    &Animations::cycle},
+        {&Patterns::halfTopBottom, &Animations::cycle},
         {&Patterns::nothing,       &Animations::waterfallEqualizer},
         {&Patterns::nothing,       &Animations::simonSaysDropTheBase},
 };
@@ -119,6 +119,7 @@ void setup() {
 
 void loop() {
     checkEncoderInput();
+    modes[currentMode]();
     (animations->*pattern_list[currentPattern].animation)();
     FastLED.show();
     delay(animationSpeed);
@@ -127,7 +128,7 @@ void loop() {
 /*
  * Checks for click or rotation input from the rotary encoder
  * 
- * Click: Changes mode selection
+ * Click: Change mode selection
  * Double click: 
  * Long click: Change direction of animation
  * Rotate: Change value
@@ -139,15 +140,12 @@ void checkEncoderInput() {
     if (b != ClickEncoder::Open) {
         switch (b) {
             case ClickEncoder::Clicked:
-//                Serial.println("Button clicked");
                 cycleSettingsMode();
                 break;
             case ClickEncoder::DoubleClicked:
-//                Serial.println("Button double clicked");
                 encoder->setAccelerationEnabled(!encoder->getAccelerationEnabled());
                 break;
             case ClickEncoder::Released:
-//                Serial.println("Button held");
                 totem->changeDirection();
                 break;
             default:;
@@ -184,32 +182,46 @@ void patternSpeedMode() {
 }
 
 void patternColorMode() {
-    totem->setHue(totem->getHue() + 3);
-    totem->clearStrip();
-    (patterns->*pattern_list[currentPattern].pattern)();
+    if (currentEncoderValue > previousEncoderValue) {
+        totem->setHue(totem->getHue() + 2);
+    } else if (currentEncoderValue < previousEncoderValue) {
+        totem->setHue(totem->getHue() - 2);
+    }
+
+    if (currentEncoderValue != previousEncoderValue) {
+        settings_strip[2].setHue(totem->getHue());
+        totem->clearStrip();
+        (patterns->*pattern_list[currentPattern].pattern)();
+    }
 //    Serial.print("Hue: ");
 //    Serial.println(totem->getHue());
 }
 
 void patternFadeMode() {
     if (currentEncoderValue > previousEncoderValue) {
-        totem->setFade(Utils::clamp(totem->getFade() + 1, 100));
+        totem->setFade(Utils::clamp(totem->getFade() + 1, 79));
     } else if (currentEncoderValue < previousEncoderValue) {
-        totem->setFade(Utils::clamp(totem->getFade() - 1, 100));
+        totem->setFade(Utils::clamp(totem->getFade() - 1, 79));
     }
 //    Serial.print("Fade: ");
 //    Serial.println(totem->getFade());
 }
 
+uint8_t brightnessSetting = 0;
 void patternBrightnessMode() {
     if (currentEncoderValue > previousEncoderValue) {
-        totem->setBrightness(totem->getBrightness() + 1);
+        totem->setBrightness(totem->getBrightness() + 4);
     } else if (currentEncoderValue < previousEncoderValue) {
-        totem->setBrightness(totem->getBrightness() - 1);
+        totem->setBrightness(totem->getBrightness() - 4);
     }
     // TODO: This is a bit of a hack so the pattern will update. Dunno if I should be doing this all the time.
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
+
+//    setSettingStrip(CRGB::Black, 10);
+    //Use a sin for the brighness here, we want it to pulse, not wrap
+    brightnessSetting = brightnessSetting - 1;
+    settings_strip[4] = CHSV(245, 255, brightnessSetting);
 
 //    Serial.print("Brightness: ");
 //    Serial.println(totem->getBrightness());

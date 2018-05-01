@@ -21,7 +21,7 @@ void Pendulum::readAccelerometerData() {
     // Add the incremental acceleration to the existing momentum
     // This code assumes that the accelerometer is mounted upside-down, level
     // and with the X-axis pointed forward.  So the Y axis reads the horizontal
-    // acceleration and the inverse of the Z axis is gravity.
+    // acceleration and the X axis is gravity.
     // For other orientations of the sensor, just change the axis to match.
     momentumH += TorqueH * CircuitPlayground.motionY() / swing;
     momentumV -= TorqueV * CircuitPlayground.motionX() / gravity;

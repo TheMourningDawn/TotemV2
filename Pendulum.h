@@ -17,11 +17,9 @@ private:
 
     // Tuning constants. (a.k.a. "Fudge Factors)
     // These can be tweaked to adjust the liveliness and sensitivity of the pendulum.
-    const float friction = 0.99; // frictional damping constant.  1.0 is no friction.
+    const float friction = 0.996; // frictional damping constant.  1.0 is no friction.
     const float swing = 20;  // arbitrary divisor for gravitational force
-    const float gravity = 100;  // arbitrary divisor for lateral acceleration
-    const float gestureThreshold = -0.80; // accelerometer threshold for toggling modes
-    const float pupilRadius = 6; // half-width of pupil (in pixels)
+    const float gravity = 150;  // arbitrary divisor for lateral acceleration
 public:
     Pendulum(Torus *totem);
 

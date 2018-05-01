@@ -1,7 +1,8 @@
 #ifndef EQUALIZER_H
 #define EQUALIZER_H
 
-#import <Arduino.h>
+#include <Arduino.h>
+#include "Utils.h"
 
 #define STROBE_PIN 2
 #define RESET_PIN 3

@@ -37,24 +37,6 @@ void Animations::meteor() {
     totem->setPixel(currentIndex, totem->getHue());
 }
 
-void Animations::wipeRainbow() {
-    fill_rainbow(&(totem->getStrip()[0]), totem->length() - 1, 20);
-}
-
-//TODO: consolodate this to just one function using top/bottom/right/left indexes.
-// dont see much point in making this one configurable in any way
-void Animations::fourPoints() {
-    fourPoints(0, 20, 40, 60);
-}
-
-void Animations::fourPoints(uint8_t point1, uint8_t point2, uint8_t point3, uint8_t point4) {
-    for (uint8_t i = 0; i < totem->length(); i++) {
-        if (i == point1 || i == point2 || i == point3 || i == point4) {
-            totem->setPixel(i, hue);
-        }
-    }
-}
-
 void Animations::blinkRandom() {
     uint8_t randomPixel = random8(totem->length() - 1);
     uint8_t randomHue = random8();
@@ -99,8 +81,8 @@ void Animations::sinelon() {
     { totem->incrementHue(1); }
 }
 
+// eight colored dots, weaving in and out of sync with each other
 void Animations::juggle() {
-    // eight colored dots, weaving in and out of sync with each other
     fadeToBlackBy(totem->getStrip(), totem->length(), 20);
     byte dothue = 0;
     for (int i = 0; i < 6; i++) {
@@ -110,6 +92,45 @@ void Animations::juggle() {
 
     EVERY_N_MILLISECONDS(20)
     { totem->incrementHue(1); }
+}
+
+//Solid color changing at the bottom every rotation
+void Animations::wipeSolidFromBottom() {
+    if(currentIndex == 0) {
+        totem->incrementHue(random8(15, 100));
+    }
+    totem->setPixel(currentIndex, totem->getHue());
+    if(totem->getDirection() == true) {
+        currentIndex = Utils::wrap(currentIndex+1, totem->length()-1);
+    } else  {
+        currentIndex = Utils::wrap(currentIndex-1, totem->length()-1);
+    }
+}
+
+void Animations::wipeRainbow() {
+    totem->setPixel(currentIndex, totem->getHue());
+    if(totem->getDirection() == true) {
+        currentIndex = Utils::wrap(currentIndex+1, totem->length()-1);
+    } else  {
+        currentIndex = Utils::wrap(currentIndex-1, totem->length()-1);
+    }
+    totem->incrementHue(4);
+}
+
+void Animations::wipeRandom() {
+    totem->setPixel(currentIndex, CHSV(totem->getHue(), 255, 255));
+    if (totem->getDirection() == true) {
+        currentIndex = Utils::wrap(currentIndex+1, totem->length()-1);
+    } else {
+        currentIndex = Utils::wrap(currentIndex-1, totem->length()-1);
+    }
+    //What I want is to change the color at some random point after it's gone 1/4 of the circle
+    //the only thing I can think of is oddly complicated and maybe inconsistant?
+    tempCounter++;
+    if (tempCounter > totem->length() / 4 + random8(0, totem->length() / 2)) {
+        totem->incrementHue(random8(20, 100));
+        tempCounter = 0;
+    }
 }
 
 
@@ -122,24 +143,7 @@ void Animations::juggle() {
  * for a period of time
  */
 
-//TODO: Put in the animation speed, yo
-void Animations::wipeSolidFromBottom() {
-    uint8_t i;
-    if (totem->getDirection() == true) {
-        for (i = 0; i < totem->length() - 1; i++) {
-            totem->setPixel(i, totem->getHue());
-            FastLED.show();
-            delay(20);
-        }
-    } else {
-        for (i = totem->length() - 1; i >= 1; --i) {
-            totem->setPixel(i - 1, totem->getHue());
-            FastLED.show();
-            delay(20);
-        }
-    }
-    totem->incrementHue(random8(100));
-}
+
 
 
 /********************************************************
@@ -152,59 +156,27 @@ void Animations::simonSaysDropTheBase() {
     equalizer->readAudioFrequencies();
 
     if (equalizer->getBand(0) > 0) {
-        totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), equalizer->getBand(0));
+        totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), random(255));
     } else {
         totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), CRGB(0, 0, 0));
     }
     if (equalizer->getBand(1) > 0) {
-        totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), equalizer->getBand(1));
+        totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), random(255));
     } else {
         totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), CRGB(0, 0, 0));
     }
     if (equalizer->getBand(2) > 0) {
-        totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), equalizer->getBand(2));
+        totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), random(255));
     } else {
         totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), CRGB(0, 0, 0));
     }
     if (equalizer->getBand(3) > 0) {
-        totem->fill(totem->getLeftPixelIndex(), totem->length() - 1, equalizer->getBand(3));
+        totem->fill(totem->getLeftPixelIndex(), totem->length() - 1, random(255));
     } else {
         totem->fill(totem->getLeftPixelIndex(), totem->length() - 1, CRGB(0, 0, 0));
     }
 
 
-}
-
-void Animations::wipeInfinity() {
-    for (uint8_t i = 0; i < totem->length() - 1; i++) {
-        totem->setPixel(i, totem->getHue());
-        FastLED.show();
-        delay(20);
-        totem->incrementHue(4);
-    }
-}
-
-
-void Animations::wipeRandom() {
-    totem->setPixel(currentIndex, CHSV(totem->getHue(), 255, 255));
-    if (totem->getDirection() == true) {
-        currentIndex++;
-        if (currentIndex > totem->length() - 1) {
-            currentIndex = 0;
-        }
-    } else {
-        currentIndex--;
-        if (currentIndex > totem->length() - 1) {
-            currentIndex = totem->length() - 1;
-        }
-    }
-    //What I want is to change the color at some random point after it's gone 1/4 of the circle
-    //the only thing I can think of is oddly complicated and maybe inconsistant?
-    tempCounter++;
-    if (tempCounter > totem->length() / 4 + random8(0, totem->length() / 2)) {
-        totem->incrementHue(random8(20, 60));
-        tempCounter = 0;
-    }
 }
 
 void Animations::waterfallEqualizer() {
@@ -215,13 +187,13 @@ void Animations::waterfallEqualizer() {
     if (equalizer->frequencies[spectrumz] > threshold) {
         int color = map(equalizer->frequencies[spectrumz], threshold, 1024, 0, 255);
         Utils::wrap(color + offset, 255);
-        totem->setPixel(39, color);
-        totem->getStrip()[39].nscale8_video(color);
+        totem->setPixel(totem->getTopPixelIndex(), color);
+        totem->getStrip()[totem->getTopPixelIndex()].nscale8_video(color);
     } else {
-        totem->setPixel(39, CRGB(0, 0, 0));
+        totem->setPixel(totem->getTopPixelIndex(), CRGB(0, 0, 0));
     }
-    totem->shiftClockwise(39);
-    totem->shiftCounterClockwise(39);
+    totem->shiftClockwise(totem->getTopPixelIndex());
+    totem->shiftCounterClockwise(totem->getTopPixelIndex());
 }
 
 int8_t i = 0;
@@ -229,17 +201,15 @@ int8_t j = 0;
 void Animations::hemiola() {
     EVERY_N_MILLISECONDS((8 / 8) * 20)
     {
-        i++;
-        i = Utils::wrap(i, totem->length() - 1);
-        totem->setPixel(i, CHSV(totem->getHue(), 200, 192));
+        i = Utils::wrap(i+1, totem->length() - 1);
+        totem->setPixel(i, CHSV(totem->getHue(), totem->getSaturation(), totem->getBrightness()));
         totem->setPixel(Utils::wrap(i - 1, totem->length() - 1), CRGB(0, 0, 0));
         FastLED.show();
     }
     EVERY_N_MILLISECONDS((3 / 4) * 20)
     {
-        j++;
-        j = Utils::wrap(j, totem->length() - 1);
-        totem->setPixel(j, CHSV(totem->getHue() + 120, 200, 192));
+        j = Utils::wrap(j-1, totem->length() - 1);
+        totem->setPixel(j, CHSV(totem->getHue() + 120, totem->getSaturation(), totem->getBrightness()));
         totem->setPixel(Utils::wrap(j - 1, totem->length() - 1), CRGB(0, 0, 0));
         FastLED.show();
     }
