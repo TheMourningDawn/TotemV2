@@ -95,7 +95,7 @@ const PatternDefinitionList pattern_list = {
 };
 
 void setup() {
-//    Serial.begin(9600);
+    Serial.begin(9600);
 
     // Initialize the circuit playground board
     CircuitPlayground.begin();

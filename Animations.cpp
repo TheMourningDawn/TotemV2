@@ -43,7 +43,7 @@ void Animations::blinkRandom() {
     for (int i = 0; i < totem->length(); i++) {
         totem->setPixel(i, CRGB(0, 0, 0));
         if (randomPixel == i) {
-            totem->setPixel(i, randomHue);
+            totem->setPixel(i, CHSV(randomHue, totem->getSaturation(), totem->getBrightness()));
         }
     }
 }
@@ -52,7 +52,7 @@ void Animations::blinkRandom() {
 void Animations::confetti() {
     fadeToBlackBy(totem->getStrip(), totem->length(), 25);
     uint8_t pos = random16(totem->length());
-    totem->setPixel(pos, CHSV(totem->getHue() + random8(64), 200, 200));
+    totem->setPixel(pos, CHSV(totem->getHue() + random8(64), totem->getSaturation(), totem->getHue()));
 
     EVERY_N_MILLISECONDS(20)
     { totem->incrementHue(1); }
@@ -62,7 +62,7 @@ void Animations::confetti() {
 void Animations::bpm() {
     uint8_t BeatsPerMinute = 120;
     CRGBPalette16 palette = PartyColors_p;
-    uint8_t beat = beatsin8(BeatsPerMinute, 64, 255);
+    uint8_t beat = beatsin8(BeatsPerMinute, 20, 255);
     for (int i = 0; i < totem->length(); i++) { //9948
         totem->setPixel(i, ColorFromPalette(palette, totem->getHue() + (i * 2), beat - hue + (i * 8)));
     }
@@ -75,7 +75,7 @@ void Animations::bpm() {
 void Animations::sinelon() {
     fadeToBlackBy(totem->getStrip(), totem->length(), 10);
     int pos = beatsin16(13, 0, totem->length() - 1);
-    totem->setPixel(pos, CHSV(totem->getHue(), 200, 192));
+    totem->setPixel(pos, CHSV(totem->getHue(), totem->getSaturation(), totem->getBrightness()));
 
     EVERY_N_MILLISECONDS(20)
     { totem->incrementHue(1); }
@@ -86,7 +86,7 @@ void Animations::juggle() {
     fadeToBlackBy(totem->getStrip(), totem->length(), 20);
     byte dothue = 0;
     for (int i = 0; i < 6; i++) {
-        totem->getStrip()[beatsin16(i + 5, 0, totem->length() - 1)] |= CHSV(dothue, 200, 180);
+        totem->getStrip()[beatsin16(i + 5, 0, totem->length() - 1)] |= CHSV(dothue, totem->getSaturation(), totem->getHue());
         dothue += 32;
     }
 
@@ -118,7 +118,7 @@ void Animations::wipeRainbow() {
 }
 
 void Animations::wipeRandom() {
-    totem->setPixel(currentIndex, CHSV(totem->getHue(), 255, 255));
+    totem->setPixel(currentIndex, CHSV(totem->getHue(), totem->getSaturation(), totem->getHue()));
     if (totem->getDirection() == true) {
         currentIndex = Utils::wrap(currentIndex+1, totem->length()-1);
     } else {
@@ -175,8 +175,6 @@ void Animations::simonSaysDropTheBase() {
     } else {
         totem->fill(totem->getLeftPixelIndex(), totem->length() - 1, CRGB(0, 0, 0));
     }
-
-
 }
 
 void Animations::waterfallEqualizer() {

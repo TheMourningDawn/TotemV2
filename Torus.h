@@ -29,6 +29,7 @@ public:
     //Set and fill operations
     void setPixel(uint8_t index);
     void setPixel(uint8_t index, CRGB color);
+    void setPixel(uint8_t index, CHSV color);
     void setPixel(uint8_t index, uint8_t hue);
     void setRightPixel(CRGB color);
     void setLeftPixel(CRGB color);

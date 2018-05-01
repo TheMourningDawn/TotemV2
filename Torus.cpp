@@ -54,6 +54,10 @@ void Torus::setPixel(uint8_t index, CRGB color) {
     strip[index] = color;
 }
 
+void Torus::setPixel(uint8_t index, CHSV color) {
+    strip[index] = color;
+}
+
 void Torus::setPixel(uint8_t index, uint8_t hue) {
     strip[index] = CHSV(hue, saturation, brightness);
 }

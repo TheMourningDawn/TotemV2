@@ -1,7 +1,7 @@
 #include "Pendulum.h"
 
 Pendulum::Pendulum(Torus *totem) : totem(totem) {
-    pos = 0;  // Starting center position of pupil
+    pos = 79;  // Starting center position of pupil
     increment = 2 * 3.14159 / totem->length(); // distance between pixels in radians
     momentumH = 0; // horizontal component of pupil rotational inertia
     momentumV = 0; // vertical component of pupil rotational inertia
