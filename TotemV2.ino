@@ -76,20 +76,23 @@ typedef PatternDefinition PatternDefinitionList[];
 const PatternDefinitionList pattern_list = {
         {&Patterns::nothing,       &Animations::meteor},
         {&Patterns::nothing,       &Animations::wipeRainbow},
-        {&Patterns::rainbow,       &Animations::cycle},
         {&Patterns::nothing,       &Animations::wipeSolidFromBottom},
+        {&Patterns::nothing,       &Animations::wipeRandom},
+        {&Patterns::rainbow,       &Animations::cycle},
         {&Patterns::nothing,       &Animations::blinkRandom},
         {&Patterns::nothing,       &Animations::confetti},
-        {&Patterns::nothing,       &Animations::pendulumSinglePoint},
-//        {&Patterns::whatever,      &Animations::cycle}, //TODO: Something wrong with this, causing resets
         {&Patterns::nothing,       &Animations::bpm},
         {&Patterns::nothing,       &Animations::juggle},
         {&Patterns::nothing,       &Animations::sinelon},
-        {&Patterns::nothing,       &Animations::wipeRandom},
         {&Patterns::nothing,       &Animations::hemiola},
+
         {&Patterns::meteorRainbow, &Animations::cycle},
         {&Patterns::fourPoints,    &Animations::cycle},
         {&Patterns::halfTopBottom, &Animations::cycle},
+        {&Patterns::fourSquare,    &Animations::cycle},
+
+        {&Patterns::nothing,       &Animations::pendulumSinglePoint},
+
         {&Patterns::nothing,       &Animations::waterfallEqualizer},
         {&Patterns::nothing,       &Animations::simonSaysDropTheBase},
 };
@@ -104,7 +107,7 @@ void setup() {
     FastLED.addLeds<NEOPIXEL, STRIP_PIN>(strip, NUM_PIXELS).setCorrection(TypicalLEDStrip);
     FastLED.addLeds<NEOPIXEL, SETTINGS_STRIP_PIN>(settings_strip, NUM_SETTING_PIXELS).setCorrection(TypicalLEDStrip);
 
-    totem = new Torus(strip, 0);
+    totem = new Torus(strip, 78);
     patterns = new Patterns(totem);
     equalizer = new Equalizer();
     animations = new Animations(totem, equalizer);
@@ -124,7 +127,7 @@ void loop() {
     modes[currentMode]();
     (animations->*pattern_list[currentPattern].animation)();
     FastLED.show();
-    if(delayAnimation == true) {
+    if (delayAnimation == true) {
         delay(totem->getAnimationSpeed());
     }
 }
@@ -210,6 +213,7 @@ void patternFadeMode() {
 }
 
 uint8_t brightnessSetting = 0;
+
 void patternBrightnessMode() {
     if (currentEncoderValue > previousEncoderValue) {
         totem->setBrightness(totem->getBrightness() + 4);
@@ -217,7 +221,7 @@ void patternBrightnessMode() {
         totem->setBrightness(totem->getBrightness() - 4);
     }
 
-    if(currentEncoderValue != previousEncoderValue) {
+    if (currentEncoderValue != previousEncoderValue) {
         totem->clearStrip();
         (patterns->*pattern_list[currentPattern].pattern)();
     }
@@ -232,7 +236,7 @@ void patternSaturationMode() {
     } else if (currentEncoderValue < previousEncoderValue) {
         totem->setSaturation(totem->getSaturation() - 1);
     }
-    if(currentEncoderValue != previousEncoderValue) {
+    if (currentEncoderValue != previousEncoderValue) {
         totem->clearStrip();
         (patterns->*pattern_list[currentPattern].pattern)();
     }
@@ -250,7 +254,7 @@ void sensitivitySelectMode() {
     }
 
     // TODO: This is a bit of a hack so the pattern will update. Dunno if I should be doing this all the time.
-    if(currentEncoderValue != previousEncoderValue) {
+    if (currentEncoderValue != previousEncoderValue) {
         totem->clearStrip();
         (patterns->*pattern_list[currentPattern].pattern)();
     }
@@ -261,9 +265,9 @@ void sensitivitySelectMode() {
 
 void frequencySelectMode() {
     if (currentEncoderValue > previousEncoderValue) {
-        equalizer->setFrequencyOffset(Utils::clamp(equalizer->getFrequencyOffset() + 1, 7));
+        equalizer->setFrequencyOffset(equalizer->getFrequencyOffset() + 1);
     } else if (currentEncoderValue < previousEncoderValue) {
-        equalizer->setSensitivity(Utils::clamp(equalizer->getSensitivity() - 1, 7));
+        equalizer->setFrequencyOffset(equalizer->getFrequencyOffset() - 1);
     }
 
 //    Serial.print("Frequency: ");

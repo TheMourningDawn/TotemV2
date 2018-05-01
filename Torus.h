@@ -20,11 +20,11 @@ private:
     uint8_t fade;
     uint8_t brightness;
     uint8_t saturation;
-    uint8_t animationSpeed;
+    int animationSpeed;
     boolean direction;
 public:
     Torus();
-    Torus(CRGB *ledStrip, uint8_t bottomIndex);
+    Torus(CRGB *ledStrip, uint8_t bottomPixelIndex);
     CRGB *getStrip();
 
     //Set and fill operations
@@ -86,8 +86,8 @@ public:
     uint8_t getSaturation();
     void setSaturation(uint8_t newSatuation);
 
-    uint8_t getAnimationSpeed();
-    void setAnimationSpeed(uint8_t newSpeed);
+    int getAnimationSpeed();
+    void setAnimationSpeed(int newSpeed);
 };
 
 #endif

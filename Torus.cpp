@@ -5,7 +5,7 @@
 
 Torus::Torus() {}
 
-Torus::Torus(CRGB *ledStrip, uint8_t bottomIndex) : strip(ledStrip) {
+Torus::Torus(CRGB *ledStrip, uint8_t bottomPixelIndex) : strip(ledStrip) {
     direction = false;
     stripLength = 80;
     hue = 0;
@@ -13,7 +13,7 @@ Torus::Torus(CRGB *ledStrip, uint8_t bottomIndex) : strip(ledStrip) {
     brightness = 200;
     saturation = 255;
     animationSpeed = 10;
-    bottomIndex = bottomIndex;
+    bottomIndex = bottomPixelIndex;
     topIndex = (stripLength / 2 + bottomIndex) % stripLength;
     leftIndex = (stripLength / 4 * 3 + bottomIndex) % stripLength;
     rightIndex = (stripLength / 4 + bottomIndex) % stripLength;
@@ -101,11 +101,15 @@ void Torus::fill(int fromIndex, int toIndex, uint8_t color) {
     fill_solid(&(strip[startFillFrom]), numberToFill, CHSV(color, saturation, brightness));
 }
 
-void wipe(int fromIndex, int toIndex, CRGB color) {
-
+//TODO: Deal with direction on these wipes
+void Torus::wipe(int fromIndex, int toIndex, CRGB color) {
+    for(int i=fromIndex; i <= toIndex; i++) {
+        setPixel(i, color);
+        delay(animationSpeed);
+    }
 }
 
-void wipe(int fromIndex, int toIndex, uint8_t color) {
+void Torus::wipe(int fromIndex, int toIndex, uint8_t color) {
 
 }
 
@@ -162,11 +166,7 @@ void Torus::cycle() {
 }
 
 void Torus::changeDirection() {
-    if (direction == true) {
-        direction = false;
-    } else {
-        direction = true;
-    }
+    direction = !direction;
 }
 
 boolean Torus::getDirection() {
@@ -209,11 +209,12 @@ void Torus::setSaturation(uint8_t newSaturation) {
     saturation = Utils::clamp(newSaturation, 150, 255);
 }
 
-uint8_t Torus::getAnimationSpeed() {
+int Torus::getAnimationSpeed() {
     return animationSpeed;
 }
-void Torus::setAnimationSpeed(uint8_t newSpeed) {
-    animationSpeed = Utils::clamp(newSpeed, 80);;
+
+void Torus::setAnimationSpeed(int newSpeed) {
+    animationSpeed = Utils::clamp(newSpeed, 120);
 }
 
 void Torus::shiftClockwise(int shiftFromPixel) {

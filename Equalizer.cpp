@@ -24,12 +24,12 @@ void Equalizer::readAudioFrequencies() {
     }
 }
 
-uint8_t Equalizer::getFrequencyOffset() {
+int Equalizer::getFrequencyOffset() {
     return frequencyOffset;
 }
 
-void Equalizer::setFrequencyOffset(uint8_t newFrequencyOffset) {
-    frequencyOffset = newFrequencyOffset;
+void Equalizer::setFrequencyOffset(int newFrequencyOffset) {
+    frequencyOffset = Utils::clamp(newFrequencyOffset, 6);
 }
 
 void Equalizer::resetFrequencyOffset() {
@@ -47,7 +47,7 @@ void Equalizer::setSensitivity(uint16_t newSensitivity) {
 uint8_t Equalizer::getBand(uint8_t band) {
     int adjustedBand = Utils::wrap(band+frequencyOffset, 6);
     if (frequencies[adjustedBand] > sensitivity) {
-        return map(frequencies[adjustedBand], sensitivity, 1025, 0, 255);
+        return map(frequencies[adjustedBand], sensitivity, 1024, 0, 255);
     } else {
         return 0;
     }
@@ -55,6 +55,6 @@ uint8_t Equalizer::getBand(uint8_t band) {
 
 uint8_t Equalizer::getBand(uint8_t band, uint16_t sensitivityThreshold) {
     int adjustedBand = Utils::wrap(band+frequencyOffset, 6);
-    return map(frequencies[adjustedBand], sensitivityThreshold, 1025, 0, 255);
+    return map(frequencies[adjustedBand], sensitivityThreshold, 1024, 0, 255);
 }
 

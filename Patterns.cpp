@@ -53,11 +53,11 @@ void Patterns::halfTopBottom(bool animate, CRGB colorTop, CRGB colorBottom) {
     totem->fill(rightIndex, leftIndex, colorBottom);
 }
 
-void Patterns::whatever() {
-    totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), CHSV(totem->getHue() + 100, 255, 255));
-    totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), CHSV(totem->getHue() + 30, 255, 255));
-    totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), CHSV(totem->getHue() + 90, 255, 255));
-    totem->fill(totem->getLeftPixelIndex(), totem->getBottomPixelIndex(), CHSV(totem->getHue() + 140, 255, 255));
+void Patterns::fourSquare() {
+    totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), CHSV(Utils::wrap(totem->getHue() + 100, 255), totem->getSaturation(), totem->getBrightness()));
+    totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), CHSV(Utils::wrap(totem->getHue() + 190, 255), totem->getSaturation(), totem->getBrightness()));
+    totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), CHSV(Utils::wrap(totem->getHue() + 90, 255), totem->getSaturation(), totem->getBrightness()));
+    totem->fill(totem->getLeftPixelIndex(), totem->getBottomPixelIndex(), CHSV(Utils::wrap(totem->getHue() + 140, 255),totem->getSaturation(), totem->getBrightness()));
 }
 
 #endif

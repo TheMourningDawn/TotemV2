@@ -18,8 +18,8 @@ public:
     void readAudioFrequencies();
     uint8_t getBand(uint8_t band);
     uint8_t getBand(uint8_t band, uint16_t sensitivityThreshold);
-    uint8_t getFrequencyOffset();
-    void setFrequencyOffset(uint8_t newFrequencyOffset);
+    int getFrequencyOffset();
+    void setFrequencyOffset(int newFrequencyOffset);
     uint16_t getSensitivity();
     void setSensitivity(uint16_t newSensitivity);
     void resetFrequencyOffset();

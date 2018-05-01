@@ -20,7 +20,7 @@ public:
     void fourPoints();
     void halfTopBottom();
     void halfTopBottom(bool animate, CRGB colorTop, CRGB colorBottom);
-    void whatever();
+    void fourSquare();
 
 };
 

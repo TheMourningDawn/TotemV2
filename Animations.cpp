@@ -86,7 +86,7 @@ void Animations::juggle() {
     fadeToBlackBy(totem->getStrip(), totem->length(), 20);
     byte dothue = 0;
     for (int i = 0; i < 6; i++) {
-        totem->getStrip()[beatsin16(i + 5, 0, totem->length() - 1)] |= CHSV(dothue, totem->getSaturation(), totem->getHue());
+        totem->getStrip()[beatsin16(i + 5, 0, totem->length() - 1)] |= CHSV(dothue, totem->getSaturation(), totem->getBrightness());
         dothue += 32;
     }
 
@@ -96,10 +96,10 @@ void Animations::juggle() {
 
 //Solid color changing at the bottom every rotation
 void Animations::wipeSolidFromBottom() {
-    if(currentIndex == 0) {
-        totem->incrementHue(random8(15, 100));
+    if(currentIndex == totem->getBottomPixelIndex()) {
+        totem->incrementHue(random8(20, 100));
     }
-    totem->setPixel(currentIndex, totem->getHue());
+    totem->setPixel(currentIndex, CHSV(totem->getHue(), totem->getSaturation(), totem->getBrightness()));
     if(totem->getDirection() == true) {
         currentIndex = Utils::wrap(currentIndex+1, totem->length()-1);
     } else  {
@@ -108,7 +108,7 @@ void Animations::wipeSolidFromBottom() {
 }
 
 void Animations::wipeRainbow() {
-    totem->setPixel(currentIndex, totem->getHue());
+    totem->setPixel(currentIndex, CHSV(totem->getHue(), totem->getSaturation(), totem->getBrightness()));
     if(totem->getDirection() == true) {
         currentIndex = Utils::wrap(currentIndex+1, totem->length()-1);
     } else  {
@@ -118,14 +118,14 @@ void Animations::wipeRainbow() {
 }
 
 void Animations::wipeRandom() {
-    totem->setPixel(currentIndex, CHSV(totem->getHue(), totem->getSaturation(), totem->getHue()));
+    totem->setPixel(currentIndex, CHSV(totem->getHue(), totem->getSaturation(), totem->getBrightness()));
     if (totem->getDirection() == true) {
         currentIndex = Utils::wrap(currentIndex+1, totem->length()-1);
     } else {
         currentIndex = Utils::wrap(currentIndex-1, totem->length()-1);
     }
     //What I want is to change the color at some random point after it's gone 1/4 of the circle
-    //the only thing I can think of is oddly complicated and maybe inconsistant?
+    //the only thing I can think of is oddly complicated and maybe inconsistent?
     tempCounter++;
     if (tempCounter > totem->length() / 4 + random8(0, totem->length() / 2)) {
         totem->incrementHue(random8(20, 100));
@@ -145,7 +145,6 @@ void Animations::wipeRandom() {
 
 
 
-
 /********************************************************
  * Testing animations
  *
@@ -154,42 +153,33 @@ void Animations::wipeRandom() {
 
 void Animations::simonSaysDropTheBase() {
     equalizer->readAudioFrequencies();
+    totem->clearStrip();
 
     if (equalizer->getBand(0) > 0) {
         totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), random(255));
-    } else {
-        totem->fill(totem->getBottomPixelIndex(), totem->getRightPixelIndex(), CRGB(0, 0, 0));
     }
     if (equalizer->getBand(1) > 0) {
         totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), random(255));
-    } else {
-        totem->fill(totem->getRightPixelIndex(), totem->getTopPixelIndex(), CRGB(0, 0, 0));
     }
     if (equalizer->getBand(2) > 0) {
         totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), random(255));
-    } else {
-        totem->fill(totem->getTopPixelIndex(), totem->getLeftPixelIndex(), CRGB(0, 0, 0));
     }
     if (equalizer->getBand(3) > 0) {
         totem->fill(totem->getLeftPixelIndex(), totem->length() - 1, random(255));
-    } else {
-        totem->fill(totem->getLeftPixelIndex(), totem->length() - 1, CRGB(0, 0, 0));
     }
 }
 
 void Animations::waterfallEqualizer() {
     equalizer->readAudioFrequencies();
-    int spectrumz = 1;
-    int threshold = 140;
-    int offset = 120;
-    if (equalizer->frequencies[spectrumz] > threshold) {
-        int color = map(equalizer->frequencies[spectrumz], threshold, 1024, 0, 255);
-        Utils::wrap(color + offset, 255);
-        totem->setPixel(totem->getTopPixelIndex(), color);
-        totem->getStrip()[totem->getTopPixelIndex()].nscale8_video(color);
+    int frequencyHue = equalizer->getBand(0);
+    if(frequencyHue > 0) {
+        int hueWithOffset = Utils::wrap(frequencyHue + totem->getHue(), 255);
+        totem->setPixel(totem->getTopPixelIndex(), hueWithOffset);
+        totem->getStrip()[totem->getTopPixelIndex()].nscale8_video(255-frequencyHue);
     } else {
         totem->setPixel(totem->getTopPixelIndex(), CRGB(0, 0, 0));
     }
+
     totem->shiftClockwise(totem->getTopPixelIndex());
     totem->shiftCounterClockwise(totem->getTopPixelIndex());
 }
