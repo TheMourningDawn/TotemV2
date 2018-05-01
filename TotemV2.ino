@@ -53,11 +53,13 @@ const ModeList modes = {
         patternSelectMode,
         patternSpeedMode,
         patternColorMode,
-        patternFadeMode,
         patternBrightnessMode,
         patternSaturationMode,
+        patternFadeMode,
         sensitivitySelectMode,
-        frequencySelectMode
+        frequencySelectMode,
+        randoSelect1,
+        randoSelect2
 };
 
 typedef void (Patterns::*Pattern)();
@@ -93,7 +95,7 @@ const PatternDefinitionList pattern_list = {
 };
 
 void setup() {
-    Serial.begin(9600);
+//    Serial.begin(9600);
 
     // Initialize the circuit playground board
     CircuitPlayground.begin();
@@ -193,6 +195,7 @@ void patternColorMode() {
         totem->clearStrip();
         (patterns->*pattern_list[currentPattern].pattern)();
     }
+    settings_strip[2] = CHSV(beatsin8(10, 0, 255), totem->getSaturation(), totem->getBrightness());
 //    Serial.print("Hue: ");
 //    Serial.println(totem->getHue());
 }
@@ -214,15 +217,12 @@ void patternBrightnessMode() {
     } else if (currentEncoderValue < previousEncoderValue) {
         totem->setBrightness(totem->getBrightness() - 4);
     }
-    // TODO: This is a bit of a hack so the pattern will update. Dunno if I should be doing this all the time.
-    totem->clearStrip();
-    (patterns->*pattern_list[currentPattern].pattern)();
 
-//    setSettingStrip(CRGB::Black, 10);
-    //Use a sin for the brighness here, we want it to pulse, not wrap
-    brightnessSetting = brightnessSetting - 1;
-    settings_strip[4] = CHSV(245, 255, brightnessSetting);
-
+    if(currentEncoderValue != previousEncoderValue) {
+        totem->clearStrip();
+        (patterns->*pattern_list[currentPattern].pattern)();
+    }
+    settings_strip[3] = CHSV(totem->getHue(), totem->getSaturation(), beatsin8(40, 0, 255));
 //    Serial.print("Brightness: ");
 //    Serial.println(totem->getBrightness());
 }
@@ -233,9 +233,11 @@ void patternSaturationMode() {
     } else if (currentEncoderValue < previousEncoderValue) {
         totem->setSaturation(totem->getSaturation() - 1);
     }
-    // TODO: This is a bit of a hack so the pattern will update. Dunno if I should be doing this all the time.
-    totem->clearStrip();
-    (patterns->*pattern_list[currentPattern].pattern)();
+    if(currentEncoderValue != previousEncoderValue) {
+        totem->clearStrip();
+        (patterns->*pattern_list[currentPattern].pattern)();
+    }
+    settings_strip[4] = CHSV(totem->getHue(), beatsin8(20, 150, 255), totem->getBrightness());
 
 //    Serial.print("Saturation: ");
 //    Serial.println(totem->getSaturation());
@@ -249,8 +251,10 @@ void sensitivitySelectMode() {
     }
 
     // TODO: This is a bit of a hack so the pattern will update. Dunno if I should be doing this all the time.
-    totem->clearStrip();
-    (patterns->*pattern_list[currentPattern].pattern)();
+    if(currentEncoderValue != previousEncoderValue) {
+        totem->clearStrip();
+        (patterns->*pattern_list[currentPattern].pattern)();
+    }
 
 //    Serial.print("Sensitivity: ");
 //    Serial.println(equalizer->getSensitivity());
@@ -267,19 +271,22 @@ void frequencySelectMode() {
 //    Serial.println(equalizer->getSensitivity());
 }
 
+void randoSelect1() {
+
+}
+
+void randoSelect2() {
+
+}
+
 void nextPattern() {
     currentPattern = Utils::wrap(currentPattern + 1, ARRAY_SIZE(pattern_list) - 1);
-//    Serial.print("Next pattern: ");
-//    Serial.println(currentPattern);
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
 }
 
 void previousPattern() {
     currentPattern = Utils::wrap(currentPattern - 1, ARRAY_SIZE(pattern_list) - 1);
-//    Serial.print("Previous pattern: ");
-//    Serial.println(currentPattern);
     totem->clearStrip();
     (patterns->*pattern_list[currentPattern].pattern)();
 }
-

@@ -2,6 +2,7 @@
 #define TORUS_H
 
 #include <FastLED.h>
+#include "Utils.h"
 
 FASTLED_USING_NAMESPACE;
 

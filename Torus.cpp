@@ -193,7 +193,7 @@ uint8_t Torus::getBrightness() {
 }
 
 void Torus::setBrightness(uint8_t newBrightness) {
-    brightness = newBrightness;
+    brightness = Utils::clamp(newBrightness, 0, 210);
 }
 
 uint8_t Torus::getSaturation() {
@@ -201,7 +201,7 @@ uint8_t Torus::getSaturation() {
 }
 
 void Torus::setSaturation(uint8_t newSaturation) {
-    saturation = newSaturation;
+    saturation = Utils::clamp(newSaturation, 150, 255);
 }
 
 void Torus::shiftClockwise(int shiftFromPixel) {
