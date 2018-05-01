@@ -39,7 +39,7 @@ Equalizer *equalizer;
 
 uint8_t currentMode = 0;
 uint8_t currentPattern = 0;
-int animationSpeed = 10;
+bool delayAnimation = true;
 
 void timerIsr() {
     encoder->service();
@@ -124,7 +124,9 @@ void loop() {
     modes[currentMode]();
     (animations->*pattern_list[currentPattern].animation)();
     FastLED.show();
-    delay(animationSpeed);
+    if(delayAnimation == true) {
+        delay(totem->getAnimationSpeed());
+    }
 }
 
 /*
@@ -145,7 +147,7 @@ void checkEncoderInput() {
                 cycleSettingsMode();
                 break;
             case ClickEncoder::DoubleClicked:
-                encoder->setAccelerationEnabled(!encoder->getAccelerationEnabled());
+                delayAnimation = !delayAnimation;
                 break;
             case ClickEncoder::Released:
                 totem->changeDirection();
@@ -172,12 +174,9 @@ void patternSelectMode() {
 
 void patternSpeedMode() {
     if (currentEncoderValue > previousEncoderValue) {
-        animationSpeed -= 2;
+        totem->setAnimationSpeed(totem->getAnimationSpeed() - 2);
     } else if (currentEncoderValue < previousEncoderValue) {
-        animationSpeed += 2;
-    }
-    if (animationSpeed < 2) {
-        animationSpeed = 0;
+        totem->setAnimationSpeed(totem->getAnimationSpeed() + 2);
     }
 //    Serial.print("Speed: ");
 //    Serial.println(animationSpeed);

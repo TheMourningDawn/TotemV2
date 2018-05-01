@@ -12,6 +12,7 @@ Torus::Torus(CRGB *ledStrip, uint8_t bottomIndex) : strip(ledStrip) {
     fade = 20;
     brightness = 200;
     saturation = 255;
+    animationSpeed = 10;
     bottomIndex = bottomIndex;
     topIndex = (stripLength / 2 + bottomIndex) % stripLength;
     leftIndex = (stripLength / 4 * 3 + bottomIndex) % stripLength;
@@ -206,6 +207,13 @@ uint8_t Torus::getSaturation() {
 
 void Torus::setSaturation(uint8_t newSaturation) {
     saturation = Utils::clamp(newSaturation, 150, 255);
+}
+
+uint8_t Torus::getAnimationSpeed() {
+    return animationSpeed;
+}
+void Torus::setAnimationSpeed(uint8_t newSpeed) {
+    animationSpeed = Utils::clamp(newSpeed, 80);;
 }
 
 void Torus::shiftClockwise(int shiftFromPixel) {
