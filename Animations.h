@@ -50,6 +50,8 @@ public:
     void pendulumMirrored();
     void pendulumMode(CRGB color, bool antiGravity);
 
+    void middleFanout();
+
     //Transition only animations
     void cycle();
 };

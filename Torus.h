@@ -19,7 +19,7 @@ private:
     uint8_t hue;
     uint8_t fade;
     uint8_t brightness;
-    uint8_t saturation;
+    int saturation;
     int animationSpeed;
     boolean direction;
 public:
@@ -42,9 +42,10 @@ public:
 
     // Wipe are the same as fill, except they animate the fill.
     // of course this blocks until the loop is done. YYMV.
-    void wipe(int fromIndex, int toIndex, CRGB color);
+    void wipe(int fromIndex, int toIndex, bool clockwise, CRGB color);
     void wipe(int fromIndex, int toIndex, uint8_t color);
 
+    void shift(int shiftFromPixel, int distance, bool clockwise);
     void shiftClockwise(int shiftFromPixel);
     void shiftCounterClockwise(int shiftFromPixel);
 
@@ -80,11 +81,11 @@ public:
     uint8_t getFade();
     void setFade(uint8_t fadeValue);
 
-    uint8_t getBrightness();
-    void setBrightness(uint8_t newBrightness);
+    int getBrightness();
+    void setBrightness(int newBrightness);
 
-    uint8_t getSaturation();
-    void setSaturation(uint8_t newSatuation);
+    int getSaturation();
+    void setSaturation(int newSatuation);
 
     int getAnimationSpeed();
     void setAnimationSpeed(int newSpeed);

@@ -52,7 +52,7 @@ void Animations::blinkRandom() {
 void Animations::confetti() {
     fadeToBlackBy(totem->getStrip(), totem->length(), 25);
     uint8_t pos = random16(totem->length());
-    totem->setPixel(pos, CHSV(totem->getHue() + random8(64), totem->getSaturation(), totem->getHue()));
+    totem->setPixel(pos, CHSV(totem->getHue() + random8(64), totem->getSaturation(), totem->getBrightness()));
 
     EVERY_N_MILLISECONDS(20)
     { totem->incrementHue(1); }
@@ -142,6 +142,46 @@ void Animations::wipeRandom() {
  * able to change modes or accept other input
  * for a period of time
  */
+
+uint8_t fanoutCounter = 0;
+void Animations::middleFanout() {
+    if(fanoutCounter >= 20) {
+        totem->setHue(totem->getHue()+40);
+        fanoutCounter=0;
+    }
+    totem->setPixel(totem->getRightPixelIndex(), totem->getHue());
+    totem->setPixel(totem->getRightPixelIndex()-1, totem->getHue());
+
+    totem->setPixel(totem->getLeftPixelIndex(), totem->getHue());
+    totem->setPixel(totem->getLeftPixelIndex()-1, totem->getHue());
+
+    totem->shift(totem->getRightPixelIndex(), 20, true);
+    totem->shift(totem->getRightPixelIndex()-1, 20, false);
+
+    totem->shift(totem->getLeftPixelIndex(), 20, false);
+    totem->shift(totem->getLeftPixelIndex()-1, 20, true);
+
+    fanoutCounter++;
+}
+
+//void Animations::middleFanoutCrazyCallMeSomethingElse() {
+//    EVERY_N_MILLISECONDS(totem->getAnimationSpeed()) {
+//        totem->setHue(totem->getHue()+20);
+//
+//    }
+//    totem->setPixel(totem->getRightPixelIndex(), totem->getHue());
+//    totem->setPixel(totem->getRightPixelIndex()-1, totem->getHue());
+//
+//    totem->setPixel(totem->getLeftPixelIndex(), totem->getHue());
+//    totem->setPixel(totem->getLeftPixelIndex()-1, totem->getHue());
+//
+//    totem->shift(totem->getRightPixelIndex(), 20, true);
+//    totem->shift(totem->getRightPixelIndex()-1, 20, false);
+//
+//    totem->shift(totem->getLeftPixelIndex(), 20, false);
+//    totem->shift(totem->getLeftPixelIndex()-1, 20, true);
+//}
+
 
 
 

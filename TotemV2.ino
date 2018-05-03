@@ -28,7 +28,7 @@ int16_t previousEncoderValue = 0;
 int16_t currentEncoderValue = 0;
 
 CRGB strip[NUM_PIXELS];
-CRGB settings_strip[NUM_SETTING_PIXELS];
+CRGB settingsStrip[NUM_SETTING_PIXELS];
 
 int frequencies[7];
 
@@ -57,9 +57,7 @@ const ModeList modes = {
         patternSaturationMode,
         patternFadeMode,
         sensitivitySelectMode,
-        frequencySelectMode,
-        randoSelect1,
-        randoSelect2
+        frequencySelectMode
 };
 
 typedef void (Patterns::*Pattern)();
@@ -75,6 +73,7 @@ typedef PatternDefinition PatternDefinitionList[];
 //TODO: Get a better name, yo
 const PatternDefinitionList pattern_list = {
         {&Patterns::nothing,       &Animations::meteor},
+        {&Patterns::nothing,       &Animations::middleFanout},
         {&Patterns::nothing,       &Animations::wipeRainbow},
         {&Patterns::nothing,       &Animations::wipeSolidFromBottom},
         {&Patterns::nothing,       &Animations::wipeRandom},
@@ -105,7 +104,7 @@ void setup() {
 
     //Initialize FastLED for the main strip and the settings strip
     FastLED.addLeds<NEOPIXEL, STRIP_PIN>(strip, NUM_PIXELS).setCorrection(TypicalLEDStrip);
-    FastLED.addLeds<NEOPIXEL, SETTINGS_STRIP_PIN>(settings_strip, NUM_SETTING_PIXELS).setCorrection(TypicalLEDStrip);
+    FastLED.addLeds<NEOPIXEL, SETTINGS_STRIP_PIN>(settingsStrip, NUM_SETTING_PIXELS).setCorrection(TypicalLEDStrip);
 
     totem = new Torus(strip, 78);
     patterns = new Patterns(totem);
@@ -169,17 +168,31 @@ void checkEncoderInput() {
 
 void patternSelectMode() {
     if (currentEncoderValue > previousEncoderValue) {
+        spinSettingsClockwise();
         nextPattern();
     } else if (currentEncoderValue < previousEncoderValue) {
+        spinSettingsCounterClockwise();
         previousPattern();
     }
 }
 
+int settingSpeed = 255;
 void patternSpeedMode() {
     if (currentEncoderValue > previousEncoderValue) {
         totem->setAnimationSpeed(totem->getAnimationSpeed() - 2);
+        if(totem->getAnimationSpeed() <= 0) {
+            flashSettingsRight(CRGB::Red);
+        }
     } else if (currentEncoderValue < previousEncoderValue) {
         totem->setAnimationSpeed(totem->getAnimationSpeed() + 2);
+        if(totem->getAnimationSpeed() >= 120) {
+            flashSettingsLeft(CRGB::Red);
+        }
+    }
+
+    EVERY_N_MILLISECONDS(settingSpeed) {
+        spinSettingsClockwise();
+        settingSpeed = beatsin8(160, 0, 255);
     }
 //    Serial.print("Speed: ");
 //    Serial.println(animationSpeed);
@@ -193,39 +206,50 @@ void patternColorMode() {
     }
 
     if (currentEncoderValue != previousEncoderValue) {
-        settings_strip[2].setHue(totem->getHue());
+        settingsStrip[2].setHue(totem->getHue());
         totem->clearStrip();
         (patterns->*pattern_list[currentPattern].pattern)();
     }
-    settings_strip[2] = CHSV(beatsin8(10, 0, 255), totem->getSaturation(), totem->getBrightness());
-//    Serial.print("Hue: ");
-//    Serial.println(totem->getHue());
+    fill_solid( &settingsStrip[0], 10, CHSV(beatsin8(5, 0, 255), 255, 255));
 }
 
 void patternFadeMode() {
     if (currentEncoderValue > previousEncoderValue) {
         totem->setFade(Utils::clamp(totem->getFade() + 1, 79));
+        if(totem->getFade() >= 79) {
+            flashSettingsRight(CRGB::Red);
+        }
     } else if (currentEncoderValue < previousEncoderValue) {
         totem->setFade(Utils::clamp(totem->getFade() - 1, 79));
+        if(totem->getFade() <= 0) {
+            flashSettingsLeft(CRGB::Red);
+        }
     }
+    fadeToBlackBy(settingsStrip, 10, 20);
+    uint8_t indexToLight = beatsin8(35, 0, 9);
+    settingsStrip[indexToLight] = CHSV(totem->getHue(), 255, 255);
 //    Serial.print("Fade: ");
 //    Serial.println(totem->getFade());
 }
 
-uint8_t brightnessSetting = 0;
-
 void patternBrightnessMode() {
     if (currentEncoderValue > previousEncoderValue) {
         totem->setBrightness(totem->getBrightness() + 4);
+        if(totem->getBrightness() >= 255) {
+            flashSettingsRight(CRGB::Red);
+        }
     } else if (currentEncoderValue < previousEncoderValue) {
         totem->setBrightness(totem->getBrightness() - 4);
+        if(totem->getBrightness() <= 0) {
+            flashSettingsLeft(CRGB::Red);
+        }
     }
 
     if (currentEncoderValue != previousEncoderValue) {
         totem->clearStrip();
         (patterns->*pattern_list[currentPattern].pattern)();
     }
-    settings_strip[3] = CHSV(totem->getHue(), totem->getSaturation(), beatsin8(40, 0, 255));
+    fill_solid( &settingsStrip[0] , 10, CHSV(totem->getHue(), 255, beatsin8(20, 0, 255)));
 //    Serial.print("Brightness: ");
 //    Serial.println(totem->getBrightness());
 }
@@ -233,14 +257,22 @@ void patternBrightnessMode() {
 void patternSaturationMode() {
     if (currentEncoderValue > previousEncoderValue) {
         totem->setSaturation(totem->getSaturation() + 1);
+        if(totem->getSaturation() >= 255) {
+            flashSettingsRight(CRGB::Red);
+        }
     } else if (currentEncoderValue < previousEncoderValue) {
         totem->setSaturation(totem->getSaturation() - 1);
+        if(totem->getSaturation() <= 120) {
+            flashSettingsLeft(CRGB::Red);
+        }
     }
     if (currentEncoderValue != previousEncoderValue) {
         totem->clearStrip();
         (patterns->*pattern_list[currentPattern].pattern)();
     }
-    settings_strip[4] = CHSV(totem->getHue(), beatsin8(20, 150, 255), totem->getBrightness());
+    uint8_t indexToLight = beatsin8(40, 0, 9);
+    uint8_t saturation = beatsin8(60, 100, 255);
+    settingsStrip[indexToLight] = CHSV(totem->getHue(), saturation, 255);
 
 //    Serial.print("Saturation: ");
 //    Serial.println(totem->getSaturation());
@@ -248,15 +280,34 @@ void patternSaturationMode() {
 
 void sensitivitySelectMode() {
     if (currentEncoderValue > previousEncoderValue) {
-        equalizer->setSensitivity(Utils::clamp(equalizer->getSensitivity() + 20, 1024));
-    } else if (currentEncoderValue < previousEncoderValue) {
         equalizer->setSensitivity(Utils::clamp(equalizer->getSensitivity() - 20, 1024));
+        if(equalizer->getSensitivity() <= 0) {
+            flashSettingsRight(CRGB::Red);
+        }
+    } else if (currentEncoderValue < previousEncoderValue) {
+        equalizer->setSensitivity(Utils::clamp(equalizer->getSensitivity() + 20, 1024));
+        if(equalizer->getSensitivity() >= 1024) {
+            flashSettingsLeft(CRGB::Red);
+        }
     }
 
-    // TODO: This is a bit of a hack so the pattern will update. Dunno if I should be doing this all the time.
     if (currentEncoderValue != previousEncoderValue) {
         totem->clearStrip();
         (patterns->*pattern_list[currentPattern].pattern)();
+    }
+
+    uint8_t indexToLight = random8(0, 10);
+    EVERY_N_MILLISECONDS(50) {
+        clearSettingsStrip();
+        for(int i = 0;i<=indexToLight;i++) {
+            if(i <= 2) {
+                settingsStrip[i] = CRGB::Green;
+            } else if(i <= 5) {
+                settingsStrip[i] = CRGB::Yellow;
+            } else {
+                settingsStrip[i] = CRGB::Red;
+            }
+        }
     }
 
 //    Serial.print("Sensitivity: ");
@@ -270,17 +321,21 @@ void frequencySelectMode() {
         equalizer->setFrequencyOffset(equalizer->getFrequencyOffset() - 1);
     }
 
-//    Serial.print("Frequency: ");
-//    Serial.println(equalizer->getSensitivity());
+    uint8_t indexToLight = equalizer->getFrequencyOffset() + 1;
+    EVERY_N_MILLISECONDS(50) {
+        clearSettingsStrip();
+        for(int i = 1;i<=indexToLight;i++) {
+            if(i <= 2) {
+                settingsStrip[i] = CRGB::Green;
+            } else if(i <= 5) {
+                settingsStrip[i] = CRGB::Yellow;
+            } else {
+                settingsStrip[i] = CRGB::Red;
+            }
+        }
+    }
 }
 
-void randoSelect1() {
-
-}
-
-void randoSelect2() {
-
-}
 
 void nextPattern() {
     currentPattern = Utils::wrap(currentPattern + 1, ARRAY_SIZE(pattern_list) - 1);

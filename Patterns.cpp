@@ -40,8 +40,8 @@ void Patterns::fourPoints() {
 }
 
 void Patterns::halfTopBottom() {
-    CRGB topColor = CHSV(totem->getHue(), 255, 255);
-    CRGB bottomColor = CHSV(totem->getHue() + 100, 255, 255);
+    CRGB topColor = CHSV(totem->getHue(), totem->getSaturation(), totem->getBrightness());
+    CRGB bottomColor = CHSV(totem->getHue() + 100, totem->getSaturation(), totem->getBrightness());
     halfTopBottom(true, topColor, bottomColor);
 }
 

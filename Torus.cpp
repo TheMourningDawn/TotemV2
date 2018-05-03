@@ -8,7 +8,7 @@ Torus::Torus() {}
 Torus::Torus(CRGB *ledStrip, uint8_t bottomPixelIndex) : strip(ledStrip) {
     direction = false;
     stripLength = 80;
-    hue = 0;
+    hue = 190;
     fade = 20;
     brightness = 200;
     saturation = 255;
@@ -102,11 +102,33 @@ void Torus::fill(int fromIndex, int toIndex, uint8_t color) {
 }
 
 //TODO: Deal with direction on these wipes
-void Torus::wipe(int fromIndex, int toIndex, CRGB color) {
-    for(int i=fromIndex; i <= toIndex; i++) {
-        setPixel(i, color);
-        delay(animationSpeed);
+void Torus::wipe(int fromIndex, int toIndex, bool clockwise, CRGB color) {
+    if(getDirection()) {
+        clockwise = !clockwise;
     }
+    if(!clockwise) {
+        if(toIndex < fromIndex) {
+            wipe(fromIndex, length()-1, clockwise, color);
+            wipe(0, toIndex, clockwise, color);
+            return;
+        }
+        for(int i=fromIndex; i <= toIndex; i++) {
+            setPixel(i, color);
+            FastLED.show();
+            delay(animationSpeed);
+        }
+    } else {
+        if(fromIndex < toIndex) {
+            wipe(fromIndex, 0, clockwise, color);
+            wipe(length()-1, toIndex, clockwise, color);
+        }
+        for(int i=fromIndex; i >= toIndex; i--) {
+            setPixel(i, color);
+            FastLED.show();
+            delay(animationSpeed);
+        }
+    }
+
 }
 
 void Torus::wipe(int fromIndex, int toIndex, uint8_t color) {
@@ -193,20 +215,20 @@ void Torus::setFade(uint8_t fadeValue) {
     fade = fadeValue;
 }
 
-uint8_t Torus::getBrightness() {
+int Torus::getBrightness() {
     return brightness;
 }
 
-void Torus::setBrightness(uint8_t newBrightness) {
-    brightness = Utils::clamp(newBrightness, 0, 210);
+void Torus::setBrightness(int newBrightness) {
+    brightness = Utils::clamp(newBrightness, 0, 255);
 }
 
-uint8_t Torus::getSaturation() {
+int Torus::getSaturation() {
     return saturation;
 }
 
-void Torus::setSaturation(uint8_t newSaturation) {
-    saturation = Utils::clamp(newSaturation, 150, 255);
+void Torus::setSaturation(int newSaturation) {
+    saturation = Utils::clamp(newSaturation, 120, 255);
 }
 
 int Torus::getAnimationSpeed() {
@@ -225,6 +247,14 @@ void Torus::shiftClockwise(int shiftFromPixel) {
 void Torus::shiftCounterClockwise(int shiftFromPixel) {
     int distance = shiftFromPixel;
     memmove(&strip[0], &strip[1], (distance) * sizeof(CRGB));
+}
+
+void Torus::shift(int shiftFromPixel, int distance, bool clockwise) {
+    if(clockwise) {
+        memmove(&strip[shiftFromPixel+1], &strip[shiftFromPixel], distance * sizeof(CRGB));
+    } else {
+        memmove(&strip[shiftFromPixel-distance], &strip[shiftFromPixel-distance+1], distance * sizeof(CRGB));
+    }
 }
 
 #endif

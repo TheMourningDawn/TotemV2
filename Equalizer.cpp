@@ -41,7 +41,7 @@ uint16_t Equalizer::getSensitivity() {
 }
 
 void Equalizer::setSensitivity(uint16_t newSensitivity) {
-    sensitivity = newSensitivity;
+    sensitivity = Utils::clamp(newSensitivity, 1024);
 }
 
 uint8_t Equalizer::getBand(uint8_t band) {
