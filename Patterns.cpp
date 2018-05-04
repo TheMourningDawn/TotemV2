@@ -19,12 +19,10 @@ void Patterns::nothing() {
     //literally
 }
 
-void Patterns::meteorRainbow() {
-    fill_rainbow(&(totem->getStrip()[0]), totem->getFade(), totem->getHue());
-}
-
 void Patterns::rainbow() {
-    fill_rainbow(&(totem->getStrip()[0]), totem->length(), totem->getHue());
+    for(int i = 0;i < totem->length(); i++) {
+        totem->setPixel(i, CHSV(i*255/totem->length(), totem->getSaturation(), totem->getBrightness()));
+    }
 }
 
 // Four points equally spaced, moving in the same directio

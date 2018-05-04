@@ -37,6 +37,20 @@ void Animations::meteor() {
     totem->setPixel(currentIndex, totem->getHue());
 }
 
+void Animations::meteorRainbow() {
+    fadeToBlackBy(totem->getStrip(), totem->length(), totem->getFade());
+    if (totem->getDirection() == true) {
+        currentIndex = Utils::wrap(currentIndex + 1, totem->length() - 1);
+    } else {
+        currentIndex = Utils::wrap(currentIndex - 1, totem->length() - 1);
+    }
+    totem->setPixel(currentIndex, totem->getHue());
+
+    EVERY_N_MILLISECONDS(20) {
+        totem->incrementHue(4);
+    }
+}
+
 void Animations::blinkRandom() {
     uint8_t randomPixel = random8(totem->length() - 1);
     uint8_t randomHue = random8();
@@ -133,16 +147,6 @@ void Animations::wipeRandom() {
     }
 }
 
-
-/********************************************************
- * Long running animations
- * 
- * These animations do loops inside of the functions,
- * so they end up blocking the arduino from being
- * able to change modes or accept other input
- * for a period of time
- */
-
 uint8_t fanoutCounter = 0;
 void Animations::middleFanout() {
     if(fanoutCounter >= 20) {
@@ -164,23 +168,33 @@ void Animations::middleFanout() {
     fanoutCounter++;
 }
 
-//void Animations::middleFanoutCrazyCallMeSomethingElse() {
-//    EVERY_N_MILLISECONDS(totem->getAnimationSpeed()) {
-//        totem->setHue(totem->getHue()+20);
-//
-//    }
-//    totem->setPixel(totem->getRightPixelIndex(), totem->getHue());
-//    totem->setPixel(totem->getRightPixelIndex()-1, totem->getHue());
-//
-//    totem->setPixel(totem->getLeftPixelIndex(), totem->getHue());
-//    totem->setPixel(totem->getLeftPixelIndex()-1, totem->getHue());
-//
-//    totem->shift(totem->getRightPixelIndex(), 20, true);
-//    totem->shift(totem->getRightPixelIndex()-1, 20, false);
-//
-//    totem->shift(totem->getLeftPixelIndex(), 20, false);
-//    totem->shift(totem->getLeftPixelIndex()-1, 20, true);
-//}
+void Animations::crazyMiddleFanout() {
+    EVERY_N_MILLISECONDS(totem->getAnimationSpeed()) {
+        totem->setHue(totem->getHue()+20);
+
+    }
+    totem->setPixel(totem->getRightPixelIndex(), totem->getHue());
+    totem->setPixel(totem->getRightPixelIndex()-1, totem->getHue());
+
+    totem->setPixel(totem->getLeftPixelIndex(), totem->getHue());
+    totem->setPixel(totem->getLeftPixelIndex()-1, totem->getHue());
+
+    totem->shift(totem->getRightPixelIndex(), 20, true);
+    totem->shift(totem->getRightPixelIndex()-1, 20, false);
+
+    totem->shift(totem->getLeftPixelIndex(), 20, false);
+    totem->shift(totem->getLeftPixelIndex()-1, 20, true);
+}
+
+/********************************************************
+ * Long running animations
+ *
+ * These animations do loops inside of the functions,
+ * so they end up blocking the arduino from being
+ * able to change modes or accept other input
+ * for a period of time
+ */
+
 
 
 
@@ -190,6 +204,13 @@ void Animations::middleFanout() {
  *
  * Trying new things!
  */
+
+void Animations::rainbowPush() {
+    for(int i = 0;i < totem->length(); i++) {
+        totem->setPixel(i, CHSV(Utils::wrap(i*255/totem->length() + totem->getHue(), 255), totem->getSaturation(), totem->getBrightness()));
+    }
+    totem->incrementHue(1);
+}
 
 void Animations::simonSaysDropTheBase() {
     equalizer->readAudioFrequencies();

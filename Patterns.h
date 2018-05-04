@@ -15,7 +15,6 @@ public:
     Patterns();
     Patterns(Torus *totem);
     void nothing();
-    void meteorRainbow();
     void rainbow();
     void fourPoints();
     void halfTopBottom();

@@ -31,6 +31,7 @@ public:
 
     //Non-blocking animations
     void meteor();
+    void meteorRainbow();
     void wipeRainbow();
     void wipeRandom();
     void blinkRandom();
@@ -39,6 +40,7 @@ public:
     void sinelon();
     void juggle();
     void hemiola();
+    void rainbowPush();
 
     //Sound reactive
     void waterfallEqualizer();
@@ -51,6 +53,7 @@ public:
     void pendulumMode(CRGB color, bool antiGravity);
 
     void middleFanout();
+    void crazyMiddleFanout();
 
     //Transition only animations
     void cycle();

@@ -57,38 +57,6 @@ void displaySettingMode() {
             settingsStrip[1].setHue(155);
             FastLED.show();
             break;
-        // Color mode
-        case 2:
-            break;
-        // Brightness mode
-        case 3:
-            break;
-        // Saturation mode
-        case 4:
-            break;
-        // Fade mode
-        case 5:
-//            settingsStrip[5].setHue(90);
-//            FastLED.show();
-            break;
-        // Sensitivity mode
-        case 6:
-//            settingsStrip[6].setHue(0);
-//            FastLED.show();
-            break;
-        // Frequency mode
-        case 7:
-//            settingsStrip[7].setHue(205);
-//            FastLED.show();
-            break;
-        case 8:
-//            settingsStrip[8].setHue(60);
-//            FastLED.show();
-            break;
-        case 9:
-//            settingsStrip[9].setHue(90);
-//            FastLED.show();
-            break;
     }
 
 }

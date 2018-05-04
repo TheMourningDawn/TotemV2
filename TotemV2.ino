@@ -73,11 +73,14 @@ typedef PatternDefinition PatternDefinitionList[];
 //TODO: Get a better name, yo
 const PatternDefinitionList pattern_list = {
         {&Patterns::nothing,       &Animations::meteor},
+        {&Patterns::nothing,       &Animations::meteorRainbow},
         {&Patterns::nothing,       &Animations::middleFanout},
+        {&Patterns::nothing,       &Animations::crazyMiddleFanout},
         {&Patterns::nothing,       &Animations::wipeRainbow},
+        {&Patterns::nothing,       &Animations::rainbowPush},
+        {&Patterns::rainbow,       &Animations::cycle},
         {&Patterns::nothing,       &Animations::wipeSolidFromBottom},
         {&Patterns::nothing,       &Animations::wipeRandom},
-        {&Patterns::rainbow,       &Animations::cycle},
         {&Patterns::nothing,       &Animations::blinkRandom},
         {&Patterns::nothing,       &Animations::confetti},
         {&Patterns::nothing,       &Animations::bpm},
@@ -85,7 +88,6 @@ const PatternDefinitionList pattern_list = {
         {&Patterns::nothing,       &Animations::sinelon},
         {&Patterns::nothing,       &Animations::hemiola},
 
-        {&Patterns::meteorRainbow, &Animations::cycle},
         {&Patterns::fourPoints,    &Animations::cycle},
         {&Patterns::halfTopBottom, &Animations::cycle},
         {&Patterns::fourSquare,    &Animations::cycle},
@@ -176,7 +178,8 @@ void patternSelectMode() {
     }
 }
 
-int settingSpeed = 255;
+int settingSpeed = 2;
+int flux = 0;
 void patternSpeedMode() {
     if (currentEncoderValue > previousEncoderValue) {
         totem->setAnimationSpeed(totem->getAnimationSpeed() - 2);
@@ -190,9 +193,15 @@ void patternSpeedMode() {
         }
     }
 
-    EVERY_N_MILLISECONDS(settingSpeed) {
+    flux = beatsin16(120, 0, 4096);
+    if(flux >= 4096) {
+        settingSpeed++;
+        if(settingSpeed > 15) {
+            settingSpeed = 0;
+        }
+    }
+    if(flux % settingSpeed == 0) {
         spinSettingsClockwise();
-        settingSpeed = beatsin8(160, 0, 255);
     }
 //    Serial.print("Speed: ");
 //    Serial.println(animationSpeed);
